@@ -13,8 +13,8 @@ import { Form, Head } from '@inertiajs/vue3';
 
 <template>
     <AuthBase
-        title="Create an account"
-        description="Enter your details below to create your account"
+        title="Start Your Journey"
+        description="Create your account and start building wealth today"
     >
         <Head title="Register" />
 
@@ -26,7 +26,7 @@ import { Form, Head } from '@inertiajs/vue3';
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="name">Name</Label>
+                    <Label for="name" class="text-sm font-semibold text-gray-300">Full Name</Label>
                     <Input
                         id="name"
                         type="text"
@@ -35,13 +35,14 @@ import { Form, Head } from '@inertiajs/vue3';
                         :tabindex="1"
                         autocomplete="name"
                         name="name"
-                        placeholder="Full name"
+                        placeholder="Enter your full name"
+                        class="w-full rounded-sm border border-gray-700 bg-gray-800 py-3 px-4 text-white placeholder-gray-500 focus:border-[#D31C00] focus:outline-none focus:ring-1 focus:ring-[#D31C00]"
                     />
-                    <InputError :message="errors.name" />
+                    <InputError :message="errors.name" class="text-sm text-red-400" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
+                    <Label for="email" class="text-sm font-semibold text-gray-300">Email address</Label>
                     <Input
                         id="email"
                         type="email"
@@ -50,12 +51,13 @@ import { Form, Head } from '@inertiajs/vue3';
                         autocomplete="email"
                         name="email"
                         placeholder="email@example.com"
+                        class="w-full rounded-sm border border-gray-700 bg-gray-800 py-3 px-4 text-white placeholder-gray-500 focus:border-[#D31C00] focus:outline-none focus:ring-1 focus:ring-[#D31C00]"
                     />
-                    <InputError :message="errors.email" />
+                    <InputError :message="errors.email" class="text-sm text-red-400" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password">Password</Label>
+                    <Label for="password" class="text-sm font-semibold text-gray-300">Password</Label>
                     <Input
                         id="password"
                         type="password"
@@ -63,13 +65,14 @@ import { Form, Head } from '@inertiajs/vue3';
                         :tabindex="3"
                         autocomplete="new-password"
                         name="password"
-                        placeholder="Password"
+                        placeholder="Create a strong password"
+                        class="w-full rounded-sm border border-gray-700 bg-gray-800 py-3 px-4 text-white placeholder-gray-500 focus:border-[#D31C00] focus:outline-none focus:ring-1 focus:ring-[#D31C00]"
                     />
-                    <InputError :message="errors.password" />
+                    <InputError :message="errors.password" class="text-sm text-red-400" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password_confirmation">Confirm password</Label>
+                    <Label for="password_confirmation" class="text-sm font-semibold text-gray-300">Confirm password</Label>
                     <Input
                         id="password_confirmation"
                         type="password"
@@ -77,28 +80,29 @@ import { Form, Head } from '@inertiajs/vue3';
                         :tabindex="4"
                         autocomplete="new-password"
                         name="password_confirmation"
-                        placeholder="Confirm password"
+                        placeholder="Re-enter your password"
+                        class="w-full rounded-sm border border-gray-700 bg-gray-800 py-3 px-4 text-white placeholder-gray-500 focus:border-[#D31C00] focus:outline-none focus:ring-1 focus:ring-[#D31C00]"
                     />
-                    <InputError :message="errors.password_confirmation" />
+                    <InputError :message="errors.password_confirmation" class="text-sm text-red-400" />
                 </div>
 
                 <Button
                     type="submit"
-                    class="mt-2 w-full"
+                    class="mt-2 w-full rounded-sm bg-[#D31C00] py-3 font-semibold text-white transition-colors hover:bg-[#B01700] disabled:opacity-50 disabled:cursor-not-allowed"
                     tabindex="5"
                     :disabled="processing"
                     data-test="register-user-button"
                 >
-                    <Spinner v-if="processing" />
-                    Create account
+                    <Spinner v-if="processing" class="mr-2" />
+                    {{ processing ? 'Creating account...' : 'Create account' }}
                 </Button>
             </div>
 
-            <div class="text-center text-sm text-muted-foreground">
+            <div class="text-center text-sm text-gray-400">
                 Already have an account?
                 <TextLink
                     :href="login()"
-                    class="underline underline-offset-4"
+                    class="text-[#D31C00] hover:text-[#B01700] transition-colors font-semibold"
                     :tabindex="6"
                     >Log in</TextLink
                 >

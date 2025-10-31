@@ -3,7 +3,6 @@ import { onMounted } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import MarketingLayout from '@/layouts/MarketingLayout.vue';
 import HeroSlider from '@/components/marketing/HeroSlider.vue';
-import TrustBar from '@/components/marketing/TrustBar.vue';
 import AboutSection from '@/components/marketing/AboutSection.vue';
 import FeaturedLocations from '@/components/marketing/FeaturedLocations.vue';
 import PropertyCategories from '@/components/marketing/PropertyCategories.vue';
@@ -83,7 +82,7 @@ withDefaults(defineProps<Props>(), {
         <HeroSlider />
 
         <!-- Trust Bar -->
-        <TrustBar :stats="stats" />
+        <!-- <TrustBar :stats="stats" /> -->
 
         <!-- About Section -->
         <AboutSection />

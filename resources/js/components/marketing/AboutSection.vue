@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-vue-next';
 
 <template>
     <section class="bg-gray-900 py-20">
+
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
                 <!-- Text Content -->
@@ -23,30 +24,20 @@ import { ArrowRight } from 'lucide-vue-next';
                     </h2>
                     <div class="space-y-4 text-lg leading-relaxed text-gray-300">
                         <p>
-                            <span class="font-semibold text-white">Waka</span> means
-                            to walk, to move, to journey forward in West African pidgin
-                            English. It's a word that resonates with millions across
-                            Nigeria, Ghana, and the broader West African diaspora—a word
-                            that feels like home.
+                            <span class="font-semibold text-white">"Waka"</span> means to walk, to move, to journey forward in West African pidgin English, while <span class="font-semibold text-white">"Wealth"</span> represents the prosperity, security, and generational legacy that every family deserves.
                         </p>
                         <p>
-                            We believe that building wealth through real estate and smart
-                            investments isn't about sudden windfalls or shortcuts. It's
-                            about taking
-                            <span class="font-semibold text-white"
-                                >intentional steps</span
-                            >, making
-                            <span class="font-semibold text-white"
-                                >informed decisions</span
-                            >, and moving forward with purpose—one property, one
-                            investment, one milestone at a time.
+                            The word "waka" resonates with millions across Nigeria, Ghana, and the broader West African diaspora—it's a word that feels like home. It's <span class="font-semibold text-white">informal, approachable, and warm</span>, yet carries the weight of determination and hustle.
+                        </p>
+                        <p>
+                            We believe that building wealth through real estate and smart investments isn't about sudden windfalls or shortcuts. It's about taking <span class="font-semibold text-white">intentional steps</span>, making <span class="font-semibold text-white">informed decisions</span>, and moving forward with purpose—one property, one investment, one milestone at a time.
                         </p>
                     </div>
 
                     <!-- Cultural Values -->
-                    <div class="mt-8 rounded-2xl bg-gray-800 p-6 shadow-sm">
+                    <div class="mt-8 rounded-2xl bg-gray-800 p-6 shadow-sm border border-gray-700">
                         <h3 class="mb-4 text-lg font-semibold text-white">
-                            In African communities, real estate represents:
+                            In African communities, real estate represents more than just property—it's a symbol of:
                         </h3>
                         <ul class="space-y-3">
                             <li class="flex items-start">

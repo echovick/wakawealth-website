@@ -29,6 +29,7 @@ const mockLocations = [
 
 <template>
     <section class="bg-gray-900 py-20">
+
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
             <div class="mb-12 text-center" data-aos="fade-up" data-aos-delay="100">

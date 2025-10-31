@@ -36,7 +36,7 @@ onUnmounted(() => {
 
 <template>
     <nav
-        class="absolute top-0 z-50 w-full bg-transparent transition-opacity duration-700"
+        class="fixed top-0 z-50 w-full bg-transparent transition-opacity duration-700"
         :class="{ 'opacity-100': isNavVisible, 'opacity-0': !isNavVisible }"
     >
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

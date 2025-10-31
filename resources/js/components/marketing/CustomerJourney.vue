@@ -42,6 +42,7 @@ const steps = [
 
 <template>
     <section class="bg-gradient-to-br from-black to-gray-900 py-20 text-white">
+
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="mb-16 text-center" data-aos="fade-up" data-aos-delay="100">
                 <h2 class="mb-4 text-4xl font-bold md:text-5xl">

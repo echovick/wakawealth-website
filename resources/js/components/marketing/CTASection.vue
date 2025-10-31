@@ -29,7 +29,10 @@ const handleSubmit = () => {
                 <h2 class="mb-4 text-4xl font-bold text-white md:text-5xl" data-aos="fade-up" data-aos-delay="100">
                     Ready to Start Your Journey?
                 </h2>
-                <p class="mx-auto mb-12 max-w-2xl text-xl text-white/90" data-aos="fade-up" data-aos-delay="200">
+                <p class="mx-auto mb-8 max-w-2xl text-2xl font-semibold text-white" data-aos="fade-up" data-aos-delay="200">
+                    "We walk with you to wealth."
+                </p>
+                <p class="mx-auto mb-12 max-w-2xl text-lg text-white/90" data-aos="fade-up" data-aos-delay="250">
                     Let's waka to wealth together. Your trusted companion on the journey to financial freedom.
                 </p>
 

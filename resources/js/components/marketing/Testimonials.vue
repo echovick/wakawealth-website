@@ -43,6 +43,7 @@ const mockTestimonials = [
 
 <template>
     <section class="bg-gray-900 py-20">
+
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="mb-16 text-center" data-aos="fade-up" data-aos-delay="100">
                 <h2 class="mb-4 text-4xl font-bold text-white md:text-5xl">

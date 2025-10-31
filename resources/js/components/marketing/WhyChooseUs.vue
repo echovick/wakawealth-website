@@ -43,13 +43,14 @@ const features = [
 
 <template>
     <section class="bg-black py-20">
+
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="mb-16 text-center" data-aos="fade-up" data-aos-delay="100">
                 <h2 class="mb-4 text-4xl font-bold text-white md:text-5xl">
-                    Why Choose <span class="text-[#D31C00]">Waka Wealth</span>
+                    Our Unique <span class="text-[#D31C00]">Proposition</span>
                 </h2>
                 <p class="mx-auto max-w-3xl text-lg text-gray-400">
-                    Our unique propositions make wealth-building accessible, transparent, and achievable for everyone
+                    What sets us apart and makes wealth-building accessible, transparent, and achievable for everyone
                 </p>
             </div>
 
