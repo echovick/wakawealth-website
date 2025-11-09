@@ -35,9 +35,50 @@ Route::get('/investment/why-invest', function () {
     return Inertia::render('Investment/WhyInvest');
 })->name('investment.why-invest');
 
-Route::get('/education/blog', function () {
+Route::get('/education', function () {
     return Inertia::render('Education');
 })->name('education');
+
+// Workshops
+Route::get('/education/workshops', function () {
+    return Inertia::render('Education/Workshops', [
+        'workshops' => [], // Will be populated from database
+    ]);
+})->name('education.workshops.index');
+
+Route::get('/education/workshops/{slug}', function ($slug) {
+    return Inertia::render('Education/WorkshopDetails', [
+        'workshop' => [], // Will be populated from database
+    ]);
+})->name('education.workshops.show');
+
+// Learning Paths
+Route::get('/education/learning-paths', function () {
+    return Inertia::render('Education/LearningPaths', [
+        'learningPaths' => [], // Will be populated from database
+    ]);
+})->name('education.learningPaths.index');
+
+Route::get('/education/learning-paths/{slug}', function ($slug) {
+    return Inertia::render('Education/LearningPathDetails', [
+        'learningPath' => [], // Will be populated from database
+    ]);
+})->name('education.learningPaths.show');
+
+// Blog
+Route::get('/blog', function () {
+    return Inertia::render('Blog/Index', [
+        'posts' => [], // Will be populated from database
+        'categories' => [], // Will be populated from database
+    ]);
+})->name('blog.index');
+
+Route::get('/blog/{slug}', function ($slug) {
+    return Inertia::render('Blog/Details', [
+        'post' => [], // Will be populated from database
+        'relatedPosts' => [], // Will be populated from database
+    ]);
+})->name('blog.show');
 
 Route::get('/contact', function () {
     return Inertia::render('Contact');
