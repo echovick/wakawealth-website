@@ -47,9 +47,7 @@ Route::get('/education/workshops', function () {
 })->name('education.workshops.index');
 
 Route::get('/education/workshops/{slug}', function ($slug) {
-    return Inertia::render('Education/WorkshopDetails', [
-        'workshop' => [], // Will be populated from database
-    ]);
+    return Inertia::render('Education/WorkshopDetails');
 })->name('education.workshops.show');
 
 // Learning Paths
@@ -74,10 +72,7 @@ Route::get('/blog', function () {
 })->name('blog.index');
 
 Route::get('/blog/{slug}', function ($slug) {
-    return Inertia::render('Blog/Details', [
-        'post' => [], // Will be populated from database
-        'relatedPosts' => [], // Will be populated from database
-    ]);
+    return Inertia::render('Blog/Details');
 })->name('blog.show');
 
 Route::get('/contact', function () {
