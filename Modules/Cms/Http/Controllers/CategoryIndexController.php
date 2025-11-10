@@ -19,9 +19,11 @@ final class CategoryIndexController
     public function __invoke(): Response
     {
         $categories = Category::query()
+            ->with('parent')
             ->withCount('posts')
+            ->orderBy('parent_id')
             ->orderBy('name')
-            ->paginate(15);
+            ->paginate(50);
 
         return Inertia::render('Cms/Categories/Index', [
             'categories' => $categories,

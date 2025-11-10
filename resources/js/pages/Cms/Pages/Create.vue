@@ -10,6 +10,7 @@ interface FieldGroup {
 
 interface Props {
     fieldGroups: FieldGroup[];
+    posts?: any[];
 }
 
 const props = defineProps<Props>();
@@ -27,6 +28,7 @@ const props = defineProps<Props>();
         <div class="max-w-4xl">
             <PageForm
                 :field-groups="fieldGroups"
+                :posts="posts"
                 submit-url="/cms/pages"
                 submit-method="post"
             />

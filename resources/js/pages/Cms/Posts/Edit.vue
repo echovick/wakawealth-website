@@ -48,6 +48,7 @@ interface Props {
   postTypes: PostType[];
   categories: Category[];
   fieldGroups: FieldGroup[];
+  posts?: any[];
 }
 
 defineProps<Props>();
@@ -70,6 +71,7 @@ defineProps<Props>();
         :post-types="postTypes"
         :categories="categories"
         :field-groups="fieldGroups"
+        :posts="posts"
       />
     </div>
   </CmsLayout>

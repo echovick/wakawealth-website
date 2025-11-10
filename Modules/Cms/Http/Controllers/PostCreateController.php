@@ -7,6 +7,7 @@ namespace Modules\Cms\Http\Controllers;
 use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Cms\Models\Category;
+use Modules\Cms\Models\Post;
 use Modules\Cms\Models\PostType;
 use Modules\Cms\Services\FieldRegistryService;
 
@@ -33,9 +34,15 @@ final class PostCreateController
             ->orderBy('name')
             ->get();
 
+        $posts = Post::query()
+            ->with('postType:id,title')
+            ->orderBy('created_at', 'desc')
+            ->get(['id', 'title', 'slug', 'post_type_id', 'published_at']);
+
         return Inertia::render('Cms/Posts/Create', [
             'postTypes' => $postTypes,
             'categories' => $categories,
+            'posts' => $posts,
             'fieldTypes' => $this->fieldRegistry->getFieldTypes(),
         ]);
     }

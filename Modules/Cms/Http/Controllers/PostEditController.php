@@ -29,9 +29,7 @@ final class PostEditController
     {
         $post->load(['postType', 'categories']);
 
-        $fieldGroups = $this->fieldGroupResolver->resolveForEntity('post', [
-            'post_type' => $post->post_type_id,
-        ]);
+        $fieldGroups = $this->fieldGroupResolver->resolveFieldGroups('post', $post);
 
         $postTypes = PostType::query()
             ->where('active', true)
@@ -42,11 +40,17 @@ final class PostEditController
             ->orderBy('name')
             ->get();
 
+        $posts = Post::query()
+            ->with('postType:id,title')
+            ->orderBy('created_at', 'desc')
+            ->get(['id', 'title', 'slug', 'post_type_id', 'published_at']);
+
         return Inertia::render('Cms/Posts/Edit', [
             'post' => $post,
             'fieldGroups' => $fieldGroups,
             'postTypes' => $postTypes,
             'categories' => $categories,
+            'posts' => $posts,
             'fieldTypes' => $this->fieldRegistry->getFieldTypes(),
         ]);
     }

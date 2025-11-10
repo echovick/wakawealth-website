@@ -3,6 +3,7 @@
 namespace Modules\Cms\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property \Illuminate\Support\Carbon $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Modules\Cms\Models\Post> $posts
  * @property-read int $posts_count
+ * @property-read \Modules\Cms\Models\Category|null $parent
  */
 final class Category extends Model
 {
@@ -41,5 +43,10 @@ final class Category extends Model
         return $this->belongsToMany(Post::class, 'post_type_categories')
             ->withPivot('post_type_id')
             ->withTimestamps();
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
     }
 }

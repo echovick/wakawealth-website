@@ -25,6 +25,7 @@ interface Props {
   postTypes: PostType[];
   categories: Category[];
   fieldTypes: FieldType[];
+  posts?: any[];
 }
 
 defineProps<Props>();
@@ -46,6 +47,7 @@ defineProps<Props>();
         :post-types="postTypes"
         :categories="categories"
         :field-groups="[]"
+        :posts="posts"
       />
     </div>
   </CmsLayout>

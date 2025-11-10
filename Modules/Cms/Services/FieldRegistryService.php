@@ -174,6 +174,17 @@ final readonly class FieldRegistryService
                     'layouts' => [],
                 ],
             ],
+            'posts' => [
+                'label' => 'Posts',
+                'icon' => 'file-text',
+                'category' => 'relational',
+                'config' => [
+                    'post_type_filter' => null,
+                    'multiple' => false,
+                    'max_items' => 0,
+                    'return_format' => 'id',
+                ],
+            ],
         ];
     }
 

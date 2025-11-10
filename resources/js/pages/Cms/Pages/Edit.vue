@@ -19,6 +19,7 @@ interface FieldGroup {
 interface Props {
     page: Page;
     fieldGroups: FieldGroup[];
+    posts?: any[];
 }
 
 const props = defineProps<Props>();
@@ -37,6 +38,7 @@ const props = defineProps<Props>();
             <PageForm
                 :page="page"
                 :field-groups="fieldGroups"
+                :posts="posts"
                 :submit-url="`/cms/pages/${page.id}`"
                 submit-method="put"
             />

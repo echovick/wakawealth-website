@@ -36,7 +36,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { MoreHorizontal, Plus } from 'lucide-vue-next';
+import { MoreHorizontal, Plus, FolderOpen, FolderTree } from 'lucide-vue-next';
+import { Badge } from '@/components/ui/badge';
 
 interface Category {
   id: number;
@@ -45,6 +46,10 @@ interface Category {
   description: string | null;
   parent_id: number | null;
   posts_count: number;
+  parent?: {
+    id: number;
+    name: string;
+  };
 }
 
 interface Props {
@@ -194,7 +199,7 @@ const generateSlug = (name: string, form: typeof createForm): void => {
                   <SelectContent>
                     <SelectItem :value="null">None (top level)</SelectItem>
                     <SelectItem
-                      v-for="category in categories.data"
+                      v-for="category in categories.data.filter(c => !c.parent_id)"
                       :key="category.id"
                       :value="category.id"
                     >
@@ -202,6 +207,9 @@ const generateSlug = (name: string, form: typeof createForm): void => {
                     </SelectItem>
                   </SelectContent>
                 </Select>
+                <p class="text-xs text-muted-foreground">
+                  Only top-level categories can be parent categories
+                </p>
               </div>
 
               <DialogFooter>
@@ -234,8 +242,38 @@ const generateSlug = (name: string, form: typeof createForm): void => {
                 No categories found. Create your first category to get started.
               </TableCell>
             </TableRow>
-            <TableRow v-for="category in categories.data" :key="category.id">
-              <TableCell class="font-medium">{{ category.name }}</TableCell>
+            <TableRow
+              v-for="category in categories.data"
+              :key="category.id"
+              :class="category.parent_id ? 'bg-muted/30' : ''"
+            >
+              <TableCell>
+                <div class="flex items-center gap-2">
+                  <div
+                    :class="category.parent_id ? 'ml-8' : ''"
+                    class="flex items-center gap-2"
+                  >
+                    <FolderOpen
+                      v-if="!category.parent_id"
+                      class="h-4 w-4 text-primary"
+                    />
+                    <FolderTree
+                      v-else
+                      class="h-4 w-4 text-muted-foreground"
+                    />
+                    <span :class="category.parent_id ? 'font-normal' : 'font-semibold'">
+                      {{ category.name }}
+                    </span>
+                  </div>
+                  <Badge
+                    v-if="category.parent"
+                    variant="secondary"
+                    class="text-xs"
+                  >
+                    {{ category.parent.name }}
+                  </Badge>
+                </div>
+              </TableCell>
               <TableCell class="text-muted-foreground">{{ category.slug }}</TableCell>
               <TableCell class="text-muted-foreground">
                 {{ category.description || '—' }}
@@ -336,7 +374,7 @@ const generateSlug = (name: string, form: typeof createForm): void => {
               <SelectContent>
                 <SelectItem :value="null">None (top level)</SelectItem>
                 <SelectItem
-                  v-for="category in categories.data.filter(c => c.id !== editingCategory?.id)"
+                  v-for="category in categories.data.filter(c => c.id !== editingCategory?.id && !c.parent_id)"
                   :key="category.id"
                   :value="category.id"
                 >
@@ -344,6 +382,9 @@ const generateSlug = (name: string, form: typeof createForm): void => {
                 </SelectItem>
               </SelectContent>
             </Select>
+            <p class="text-xs text-muted-foreground">
+              Only top-level categories can be parent categories
+            </p>
           </div>
 
           <DialogFooter>
