@@ -79,13 +79,9 @@ Route::get('/contact', function () {
     return Inertia::render('Contact');
 })->name('contact');
 
-Route::post('/contact', function () {
-    // Handle contact form submission
-    return back()->with('success', 'Thank you for your message. We will get back to you within 24 hours.');
-})->name('contact.submit');
-
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
 
 require __DIR__ . '/settings.php';
+require __DIR__ . '/cms.php';

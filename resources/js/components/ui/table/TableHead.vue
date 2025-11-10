@@ -1,0 +1,18 @@
+<script setup lang="ts">
+import { cn } from '@/lib/utils';
+import { useAttrs } from 'vue';
+
+const attrs = useAttrs();
+</script>
+
+<template>
+    <th
+        :class="cn(
+            'h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0',
+            attrs.class
+        )"
+        v-bind="$attrs"
+    >
+        <slot />
+    </th>
+</template>
