@@ -20,7 +20,6 @@ final class PostType extends Model
 {
     /** @var array<string, scalar|bool|null> Default values for Eloquent attributes */
     protected $attributes = [
-        'content' => '{}',
         'active' => true,
     ];
 

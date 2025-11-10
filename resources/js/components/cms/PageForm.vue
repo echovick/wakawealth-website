@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { ChevronDown, ChevronUp } from 'lucide-vue-next';
 import FieldRenderer from '@/components/cms/fields/FieldRenderer.vue';
 import InputError from '@/components/InputError.vue';
 
@@ -63,6 +64,13 @@ const form = useForm({
     description: props.page?.description || '',
     content: normalizeContent(props.page?.content),
 });
+
+// Track collapsed state for each field group
+const collapsedFieldGroups = ref<Record<number, boolean>>({});
+
+const toggleFieldGroupCollapse = (groupId: number): void => {
+    collapsedFieldGroups.value[groupId] = !collapsedFieldGroups.value[groupId];
+};
 
 const generateSlug = () => {
     if (!form.title) return;
@@ -125,20 +133,33 @@ const submit = () => {
         <div
             v-for="fieldGroup in fieldGroups"
             :key="fieldGroup.id"
-            class="space-y-4 bg-card p-6 rounded-lg border"
+            class="bg-card rounded-lg border"
         >
-            <h3 class="text-lg font-semibold">{{ fieldGroup.title }}</h3>
+            <div class="flex items-center justify-between p-6 pb-4">
+                <h3 class="text-lg font-semibold">{{ fieldGroup.title }}</h3>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    @click="toggleFieldGroupCollapse(fieldGroup.id)"
+                >
+                    <ChevronDown v-if="collapsedFieldGroups[fieldGroup.id]" class="h-5 w-5" />
+                    <ChevronUp v-else class="h-5 w-5" />
+                </Button>
+            </div>
 
-            <div
-                v-for="field in fieldGroup.fields"
-                :key="field.id"
-                class="space-y-2"
-            >
-                <FieldRenderer
-                    :field="field"
-                    v-model="form.content[field.name]"
-                />
-                <InputError :message="form.errors[`content.${field.name}`]" />
+            <div v-if="!collapsedFieldGroups[fieldGroup.id]" class="px-6 pb-6 space-y-4">
+                <div
+                    v-for="field in fieldGroup.fields"
+                    :key="field.id"
+                    class="space-y-2"
+                >
+                    <FieldRenderer
+                        :field="field"
+                        v-model="form.content[field.name]"
+                    />
+                    <InputError :message="form.errors[`content.${field.name}`]" />
+                </div>
             </div>
         </div>
 

@@ -30,6 +30,11 @@ const menuItems = [
         icon: 'newspaper',
     },
     {
+        title: 'Post Types',
+        url: '/cms/post-types',
+        icon: 'list',
+    },
+    {
         title: 'Categories',
         url: '/cms/categories',
         icon: 'folder',

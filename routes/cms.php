@@ -12,6 +12,7 @@ use Modules\Cms\Http\Controllers\ContactDestroyController;
 use Modules\Cms\Http\Controllers\ContactIndexController;
 use Modules\Cms\Http\Controllers\ContactShowController;
 use Modules\Cms\Http\Controllers\ContactStoreController;
+use Modules\Cms\Http\Controllers\DashboardController;
 use Modules\Cms\Http\Controllers\FieldGroupCreateController;
 use Modules\Cms\Http\Controllers\FieldGroupDestroyController;
 use Modules\Cms\Http\Controllers\FieldGroupEditController;
@@ -31,6 +32,12 @@ use Modules\Cms\Http\Controllers\PostEditController;
 use Modules\Cms\Http\Controllers\PostIndexController;
 use Modules\Cms\Http\Controllers\PostStoreController;
 use Modules\Cms\Http\Controllers\PostUpdateController;
+use Modules\Cms\Http\Controllers\PostTypeCreateController;
+use Modules\Cms\Http\Controllers\PostTypeDestroyController;
+use Modules\Cms\Http\Controllers\PostTypeEditController;
+use Modules\Cms\Http\Controllers\PostTypeIndexController;
+use Modules\Cms\Http\Controllers\PostTypeStoreController;
+use Modules\Cms\Http\Controllers\PostTypeUpdateController;
 use Modules\Cms\Http\Controllers\SettingIndexController;
 use Modules\Cms\Http\Controllers\SettingUpdateController;
 use Modules\Cms\Http\Middleware\EnsureCmsAccess;
@@ -48,9 +55,7 @@ Route::prefix('cms')->name('cms.')->group(function (): void {
 // Protected CMS routes
 Route::prefix('cms')->name('cms.')->middleware([EnsureCmsAccess::class])->group(function (): void {
     // Dashboard
-    Route::get('/', function () {
-        return inertia('Cms/Dashboard');
-    })->name('dashboard');
+    Route::get('/', DashboardController::class)->name('dashboard');
 
     // Pages
     Route::prefix('pages')->name('pages.')->group(function (): void {
@@ -70,6 +75,16 @@ Route::prefix('cms')->name('cms.')->middleware([EnsureCmsAccess::class])->group(
         Route::get('/{post}/edit', PostEditController::class)->name('edit');
         Route::put('/{post}', PostUpdateController::class)->name('update');
         Route::delete('/{post}', PostDestroyController::class)->name('destroy');
+    });
+
+    // Post Types
+    Route::prefix('post-types')->name('post-types.')->group(function (): void {
+        Route::get('/', PostTypeIndexController::class)->name('index');
+        Route::get('/create', PostTypeCreateController::class)->name('create');
+        Route::post('/', PostTypeStoreController::class)->name('store');
+        Route::get('/{post_type}/edit', PostTypeEditController::class)->name('edit');
+        Route::put('/{post_type}', PostTypeUpdateController::class)->name('update');
+        Route::delete('/{post_type}', PostTypeDestroyController::class)->name('destroy');
     });
 
     // Categories

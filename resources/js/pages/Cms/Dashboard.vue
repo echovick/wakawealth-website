@@ -114,7 +114,7 @@ const props = withDefaults(defineProps<Props>(), {
                             Create and manage your website content
                         </CardDescription>
                     </CardHeader>
-                    <CardContent class="space-y-2">
+                    <CardContent class="space-y-3">
                         <Link href="/cms/pages/create">
                             <Button variant="outline" class="w-full justify-start">
                                 + Create New Page
@@ -135,7 +135,7 @@ const props = withDefaults(defineProps<Props>(), {
                             Configure your CMS settings and fields
                         </CardDescription>
                     </CardHeader>
-                    <CardContent class="space-y-2">
+                    <CardContent class="space-y-3">
                         <Link href="/cms/field-groups">
                             <Button variant="outline" class="w-full justify-start">
                                 Manage Field Groups
