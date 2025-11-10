@@ -185,6 +185,36 @@ final readonly class FieldRegistryService
                     'return_format' => 'id',
                 ],
             ],
+            'categories' => [
+                'label' => 'Categories',
+                'icon' => 'folder',
+                'category' => 'relational',
+                'config' => [
+                    'multiple' => false,
+                    'max_items' => 0,
+                    'return_format' => 'id',
+                ],
+            ],
+            'post_types' => [
+                'label' => 'Post Types',
+                'icon' => 'layers',
+                'category' => 'relational',
+                'config' => [
+                    'multiple' => false,
+                    'max_items' => 0,
+                    'return_format' => 'id',
+                ],
+            ],
+            'field_types' => [
+                'label' => 'Field Types',
+                'icon' => 'blocks',
+                'category' => 'relational',
+                'config' => [
+                    'multiple' => false,
+                    'max_items' => 0,
+                    'return_format' => 'id',
+                ],
+            ],
         ];
     }
 

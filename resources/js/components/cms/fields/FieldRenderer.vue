@@ -14,6 +14,9 @@ import TimePickerField from './TimePickerField.vue';
 import RepeaterField from './RepeaterField.vue';
 import GroupField from './GroupField.vue';
 import PostsField from './PostsField.vue';
+import CategoriesField from './CategoriesField.vue';
+import PostTypesField from './PostTypesField.vue';
+import FieldTypesField from './FieldTypesField.vue';
 
 interface Field {
     name: string;
@@ -28,6 +31,9 @@ interface Props {
     field: Field;
     modelValue?: any;
     posts?: any[];
+    categories?: any[];
+    postTypes?: any[];
+    fieldTypes?: any;
 }
 
 const props = defineProps<Props>();
@@ -49,6 +55,9 @@ const fieldComponent = computed(() => {
         repeater: RepeaterField,
         group: GroupField,
         posts: PostsField,
+        categories: CategoriesField,
+        post_types: PostTypesField,
+        field_types: FieldTypesField,
     };
 
     return componentMap[props.field.type] || TextField;
@@ -66,6 +75,9 @@ const updateValue = (value: any) => {
             :field="field"
             :model-value="modelValue"
             :posts="posts"
+            :categories="categories"
+            :post-types="postTypes"
+            :field-types="fieldTypes"
             @update:model-value="updateValue"
         />
         <p v-if="field.instructions" class="text-sm text-muted-foreground">

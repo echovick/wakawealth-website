@@ -48,6 +48,7 @@ defineProps<Props>();
         :categories="categories"
         :field-groups="[]"
         :posts="posts"
+        :field-types="fieldTypes"
       />
     </div>
   </CmsLayout>

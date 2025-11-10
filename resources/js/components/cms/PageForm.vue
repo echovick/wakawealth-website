@@ -37,6 +37,9 @@ interface Props {
     page?: Page;
     fieldGroups?: FieldGroup[];
     posts?: any[];
+    categories?: any[];
+    postTypes?: any[];
+    fieldTypes?: any;
     submitUrl: string;
     submitMethod?: 'post' | 'put';
 }
@@ -50,6 +53,9 @@ const props = withDefaults(defineProps<Props>(), {
     }),
     fieldGroups: () => [],
     posts: () => [],
+    categories: () => [],
+    postTypes: () => [],
+    fieldTypes: () => ({}),
     submitMethod: 'post',
 });
 
@@ -159,6 +165,9 @@ const submit = () => {
                     <FieldRenderer
                         :field="field"
                         :posts="posts"
+                        :categories="categories"
+                        :post-types="postTypes"
+                        :field-types="fieldTypes"
                         v-model="form.content[field.name]"
                     />
                     <InputError :message="form.errors[`content.${field.name}`]" />

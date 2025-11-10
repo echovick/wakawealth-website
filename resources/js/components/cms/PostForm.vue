@@ -67,10 +67,12 @@ interface Props {
   categories: Category[];
   fieldGroups: FieldGroup[];
   posts?: any[];
+  fieldTypes?: any;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   posts: () => [],
+  fieldTypes: () => ({}),
 });
 
 const form = useForm({
@@ -170,6 +172,9 @@ const toggleCategory = (categoryId: number): void => {
             <FieldRenderer
               :field="field"
               :posts="posts"
+              :categories="categories"
+              :post-types="postTypes"
+              :field-types="fieldTypes"
               v-model="form.content[field.name]"
             />
           </div>
