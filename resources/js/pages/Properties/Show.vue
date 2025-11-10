@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import MarketingLayout from '@/layouts/MarketingLayout.vue';
 import { MapPin, Home, Tag, Calendar, User, ChevronLeft, ChevronRight } from 'lucide-vue-next';
@@ -59,55 +59,105 @@ const formatPrice = (price: number) => {
 
 const primaryLocation = props.property.categories[0];
 
-// Dummy data - will be replaced with CMS content
-const dummyGallery = [
-    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800',
-    'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800',
-    'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800',
-    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
-];
+// CMS Content with fallback to dummy data
+const gallery = computed(() => {
+    const cmsGallery = props.property.content?.gallery || [];
+    if (cmsGallery.length > 0) {
+        return cmsGallery.map(item => item.image);
+    }
+    // Fallback dummy data
+    return [
+        'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800',
+        'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800',
+        'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800',
+        'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
+    ];
+});
 
-const dummyPrice = 45000000;
+const price = computed(() => {
+    return props.property.content?.price || 45000000;
+});
 
-const dummyPaymentPlan = {
-    available: true,
-    plans: [
-        {
-            name: 'Outright Payment',
-            description: 'Full payment at once with 10% discount',
-            price: 40500000,
-            discount: '10%',
-        },
-        {
-            name: '6 Months Plan',
-            description: 'Pay in 6 monthly installments',
-            initialDeposit: 15000000,
-            monthly: 5000000,
-            total: 45000000,
-        },
-        {
-            name: '12 Months Plan',
-            description: 'Pay in 12 monthly installments',
-            initialDeposit: 12000000,
-            monthly: 2916667,
-            total: 47000000,
-        },
-    ],
-};
+const propertyOverview = computed(() => {
+    return props.property.content?.property_overview || null;
+});
 
-const dummyFloorPlans = [
-    'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800',
-    'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800',
-];
+const keyFeatures = computed(() => {
+    const cmsFeatures = props.property.content?.key_features || [];
+    if (cmsFeatures.length > 0) {
+        return cmsFeatures;
+    }
+    // Fallback dummy data
+    return [
+        { title: 'Premium Location', description: 'Strategically positioned in a high-growth area' },
+        { title: 'Quality Construction', description: 'Built with premium materials and finishes' },
+        { title: 'Great Accessibility', description: 'Easy access to major roads and amenities' },
+        { title: 'High ROI Potential', description: 'Excellent investment returns and appreciation' },
+    ];
+});
+
+const amenities = computed(() => {
+    const cmsAmenities = props.property.content?.amenities || [];
+    if (cmsAmenities.length > 0) {
+        return cmsAmenities.map(item => item.amenity);
+    }
+    // Fallback dummy data
+    return ['24/7 Security', 'Paved Roads', 'Electricity', 'Water Supply', 'Drainage System', 'Green Spaces'];
+});
+
+const floorPlans = computed(() => {
+    const cmsPlans = props.property.content?.floor_plans || [];
+    if (cmsPlans.length > 0) {
+        return cmsPlans.map(item => item.plan_image);
+    }
+    // Fallback dummy data
+    return [
+        'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800',
+        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800',
+    ];
+});
+
+const paymentPlans = computed(() => {
+    const cmsPlans = props.property.content?.payment_plans;
+    if (cmsPlans && cmsPlans.available && cmsPlans.plans?.length > 0) {
+        return cmsPlans;
+    }
+    // Fallback dummy data
+    return {
+        available: true,
+        plans: [
+            {
+                name: 'Outright Payment',
+                description: 'Full payment at once with 10% discount',
+                price: 40500000,
+                discount: '10%',
+            },
+            {
+                name: '6 Months Plan',
+                description: 'Pay in 6 monthly installments',
+                initial_deposit: 15000000,
+                monthly_payment: 5000000,
+                total: 45000000,
+            },
+            {
+                name: '12 Months Plan',
+                description: 'Pay in 12 monthly installments',
+                initial_deposit: 12000000,
+                monthly_payment: 2916667,
+                total: 47000000,
+            },
+        ],
+    };
+});
 
 const currentImageIndex = ref(0);
 
 const nextImage = () => {
-    currentImageIndex.value = (currentImageIndex.value + 1) % dummyGallery.length;
+    currentImageIndex.value = (currentImageIndex.value + 1) % gallery.value.length;
 };
 
 const prevImage = () => {
-    currentImageIndex.value = (currentImageIndex.value - 1 + dummyGallery.length) % dummyGallery.length;
+    currentImageIndex.value = (currentImageIndex.value - 1 + gallery.value.length) % gallery.value.length;
 };
 
 const selectImage = (index: number) => {
@@ -158,7 +208,7 @@ const selectImage = (index: number) => {
 
                     <div class="mb-4">
                         <div class="text-3xl font-bold text-[#D31C00]">
-                            {{ formatPrice(dummyPrice) }}
+                            {{ formatPrice(price) }}
                         </div>
                     </div>
 
@@ -196,7 +246,7 @@ const selectImage = (index: number) => {
                             <!-- Main Image -->
                             <div class="relative aspect-[16/9] rounded-2xl bg-gradient-to-br from-gray-800 to-gray-700 overflow-hidden">
                                 <img
-                                    :src="dummyGallery[currentImageIndex]"
+                                    :src="gallery[currentImageIndex]"
                                     :alt="`${property.title} - Image ${currentImageIndex + 1}`"
                                     class="h-full w-full object-cover"
                                 />
@@ -215,14 +265,14 @@ const selectImage = (index: number) => {
                                 </button>
                                 <!-- Image Counter -->
                                 <div class="absolute bottom-4 right-4 rounded-full bg-black/50 px-3 py-1 text-sm text-white">
-                                    {{ currentImageIndex + 1 }} / {{ dummyGallery.length }}
+                                    {{ currentImageIndex + 1 }} / {{ gallery.length }}
                                 </div>
                             </div>
 
                             <!-- Thumbnail Gallery -->
                             <div class="grid grid-cols-4 gap-4">
                                 <button
-                                    v-for="(image, index) in dummyGallery"
+                                    v-for="(image, index) in gallery"
                                     :key="index"
                                     @click="selectImage(index)"
                                     :class="[
@@ -245,21 +295,7 @@ const selectImage = (index: number) => {
                         <div class="rounded-2xl border border-gray-800 bg-gray-900 p-8">
                             <h2 class="mb-6 text-2xl font-bold text-white">Property Overview</h2>
                             <div class="prose prose-invert max-w-none text-gray-300">
-                                <!-- Property content will be rendered here -->
-                                <div v-if="Object.keys(property.content).length > 0">
-                                    <!-- Dynamic content rendering based on field groups -->
-                                    <div v-for="(value, key) in property.content" :key="key" class="mb-6">
-                                        <div v-if="typeof value === 'string'" v-html="value"></div>
-                                        <div v-else-if="Array.isArray(value)" class="space-y-2">
-                                            <div v-for="(item, index) in value" :key="index">
-                                                {{ item }}
-                                            </div>
-                                        </div>
-                                        <div v-else>
-                                            {{ value }}
-                                        </div>
-                                    </div>
-                                </div>
+                                <div v-if="propertyOverview" v-html="propertyOverview"></div>
                                 <div v-else>
                                     <p class="mb-4">
                                         This exceptional property represents a prime investment opportunity in one of Nigeria's most sought-after locations. Designed with modern living in mind, it combines luxury, comfort, and strategic positioning to deliver outstanding value.
@@ -275,40 +311,17 @@ const selectImage = (index: number) => {
                         <div class="rounded-2xl border border-gray-800 bg-gray-900 p-8">
                             <h2 class="mb-6 text-2xl font-bold text-white">Key Features</h2>
                             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <div class="flex items-start gap-3">
+                                <div
+                                    v-for="(feature, index) in keyFeatures"
+                                    :key="index"
+                                    class="flex items-start gap-3"
+                                >
                                     <div class="rounded-full bg-[#D31C00]/20 p-2">
                                         <Home class="h-5 w-5 text-[#D31C00]" />
                                     </div>
                                     <div>
-                                        <h3 class="font-semibold text-white">Premium Location</h3>
-                                        <p class="text-sm text-gray-400">Strategically positioned in a high-growth area</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start gap-3">
-                                    <div class="rounded-full bg-[#D31C00]/20 p-2">
-                                        <Home class="h-5 w-5 text-[#D31C00]" />
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold text-white">Quality Construction</h3>
-                                        <p class="text-sm text-gray-400">Built with premium materials and finishes</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start gap-3">
-                                    <div class="rounded-full bg-[#D31C00]/20 p-2">
-                                        <Home class="h-5 w-5 text-[#D31C00]" />
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold text-white">Great Accessibility</h3>
-                                        <p class="text-sm text-gray-400">Easy access to major roads and amenities</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start gap-3">
-                                    <div class="rounded-full bg-[#D31C00]/20 p-2">
-                                        <Home class="h-5 w-5 text-[#D31C00]" />
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold text-white">High ROI Potential</h3>
-                                        <p class="text-sm text-gray-400">Excellent investment returns and appreciation</p>
+                                        <h3 class="font-semibold text-white">{{ feature.title }}</h3>
+                                        <p class="text-sm text-gray-400">{{ feature.description }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -318,29 +331,13 @@ const selectImage = (index: number) => {
                         <div class="rounded-2xl border border-gray-800 bg-gray-900 p-8">
                             <h2 class="mb-6 text-2xl font-bold text-white">Amenities & Facilities</h2>
                             <div class="grid grid-cols-2 gap-4 md:grid-cols-3">
-                                <div class="flex items-center gap-2 text-gray-300">
+                                <div
+                                    v-for="(amenity, index) in amenities"
+                                    :key="index"
+                                    class="flex items-center gap-2 text-gray-300"
+                                >
                                     <div class="h-2 w-2 rounded-full bg-[#D31C00]"></div>
-                                    <span>24/7 Security</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-gray-300">
-                                    <div class="h-2 w-2 rounded-full bg-[#D31C00]"></div>
-                                    <span>Paved Roads</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-gray-300">
-                                    <div class="h-2 w-2 rounded-full bg-[#D31C00]"></div>
-                                    <span>Electricity</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-gray-300">
-                                    <div class="h-2 w-2 rounded-full bg-[#D31C00]"></div>
-                                    <span>Water Supply</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-gray-300">
-                                    <div class="h-2 w-2 rounded-full bg-[#D31C00]"></div>
-                                    <span>Drainage System</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-gray-300">
-                                    <div class="h-2 w-2 rounded-full bg-[#D31C00]"></div>
-                                    <span>Green Spaces</span>
+                                    <span>{{ amenity }}</span>
                                 </div>
                             </div>
                         </div>
@@ -350,7 +347,7 @@ const selectImage = (index: number) => {
                             <h2 class="mb-6 text-2xl font-bold text-white">Floor Plans</h2>
                             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <div
-                                    v-for="(plan, index) in dummyFloorPlans"
+                                    v-for="(plan, index) in floorPlans"
                                     :key="index"
                                     class="aspect-square rounded-lg overflow-hidden border border-gray-800 hover:border-[#D31C00] transition-colors cursor-pointer"
                                 >
@@ -364,11 +361,11 @@ const selectImage = (index: number) => {
                         </div>
 
                         <!-- Payment Plans -->
-                        <div v-if="dummyPaymentPlan.available" class="rounded-2xl border border-gray-800 bg-gray-900 p-8">
+                        <div v-if="paymentPlans.available" class="rounded-2xl border border-gray-800 bg-gray-900 p-8">
                             <h2 class="mb-6 text-2xl font-bold text-white">Flexible Payment Plans</h2>
                             <div class="space-y-4">
                                 <div
-                                    v-for="(plan, index) in dummyPaymentPlan.plans"
+                                    v-for="(plan, index) in paymentPlans.plans"
                                     :key="index"
                                     class="rounded-lg border border-gray-800 bg-black p-6 transition-colors hover:border-[#D31C00]"
                                 >
@@ -389,11 +386,11 @@ const selectImage = (index: number) => {
                                         <div v-else>
                                             <div class="flex items-center justify-between">
                                                 <span class="text-gray-400">Initial Deposit:</span>
-                                                <span class="font-semibold text-white">{{ formatPrice(plan.initialDeposit) }}</span>
+                                                <span class="font-semibold text-white">{{ formatPrice(plan.initial_deposit) }}</span>
                                             </div>
                                             <div class="flex items-center justify-between">
                                                 <span class="text-gray-400">Monthly Payment:</span>
-                                                <span class="font-semibold text-white">{{ formatPrice(plan.monthly) }}</span>
+                                                <span class="font-semibold text-white">{{ formatPrice(plan.monthly_payment) }}</span>
                                             </div>
                                             <div class="mt-2 flex items-center justify-between border-t border-gray-800 pt-2">
                                                 <span class="text-gray-400">Total:</span>
@@ -414,7 +411,7 @@ const selectImage = (index: number) => {
                                 Starting From
                             </div>
                             <div class="mb-4 text-4xl font-bold text-[#D31C00]">
-                                {{ formatPrice(dummyPrice) }}
+                                {{ formatPrice(price) }}
                             </div>
                             <Link
                                 href="/contact"

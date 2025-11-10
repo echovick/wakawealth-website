@@ -43,6 +43,7 @@ interface Category {
   id: number;
   name: string;
   slug: string;
+  image: string | null;
   description: string | null;
   parent_id: number | null;
   posts_count: number;
@@ -72,6 +73,7 @@ const editingCategory = ref<Category | null>(null);
 const createForm = useForm({
   name: '',
   slug: '',
+  image: '',
   description: '',
   parent_id: null as number | null,
 });
@@ -79,6 +81,7 @@ const createForm = useForm({
 const editForm = useForm({
   name: '',
   slug: '',
+  image: '',
   description: '',
   parent_id: null as number | null,
 });
@@ -96,6 +99,7 @@ const openEditDialog = (category: Category): void => {
   editingCategory.value = category;
   editForm.name = category.name;
   editForm.slug = category.slug;
+  editForm.image = category.image || '';
   editForm.description = category.description || '';
   editForm.parent_id = category.parent_id;
   isEditDialogOpen.value = true;
@@ -178,6 +182,22 @@ const generateSlug = (name: string, form: typeof createForm): void => {
                 />
                 <p v-if="createForm.errors.slug" class="text-sm text-destructive">
                   {{ createForm.errors.slug }}
+                </p>
+              </div>
+
+              <div class="space-y-2">
+                <Label for="create-image">Image URL</Label>
+                <Input
+                  id="create-image"
+                  v-model="createForm.image"
+                  type="url"
+                  placeholder="https://example.com/image.jpg"
+                />
+                <p v-if="createForm.errors.image" class="text-sm text-destructive">
+                  {{ createForm.errors.image }}
+                </p>
+                <p class="text-xs text-muted-foreground">
+                  Optional - Enter the URL of an image for this category
                 </p>
               </div>
 
@@ -353,6 +373,22 @@ const generateSlug = (name: string, form: typeof createForm): void => {
             />
             <p v-if="editForm.errors.slug" class="text-sm text-destructive">
               {{ editForm.errors.slug }}
+            </p>
+          </div>
+
+          <div class="space-y-2">
+            <Label for="edit-image">Image URL</Label>
+            <Input
+              id="edit-image"
+              v-model="editForm.image"
+              type="url"
+              placeholder="https://example.com/image.jpg"
+            />
+            <p v-if="editForm.errors.image" class="text-sm text-destructive">
+              {{ editForm.errors.image }}
+            </p>
+            <p class="text-xs text-muted-foreground">
+              Optional - Enter the URL of an image for this category
             </p>
           </div>
 

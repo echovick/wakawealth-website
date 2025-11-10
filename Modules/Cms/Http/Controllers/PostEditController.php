@@ -29,7 +29,7 @@ final class PostEditController
     {
         $post->load(['postType', 'categories']);
 
-        $fieldGroups = $this->fieldGroupResolver->resolveFieldGroups('post', $post);
+        $fieldGroups = $this->fieldGroupResolver->resolveFieldGroups('post', $post)->values();
 
         $postTypes = PostType::query()
             ->where('active', true)

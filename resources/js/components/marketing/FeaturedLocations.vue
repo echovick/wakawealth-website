@@ -52,8 +52,19 @@ const mockLocations = [
                     data-aos="fade-up"
                     :data-aos-delay="200 + (index * 100)"
                 >
-                    <div class="aspect-[4/3] bg-gradient-to-br from-orange-100 via-pink-100 to-yellow-100">
-                        <!-- Image would go here -->
+                    <div class="aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-800 to-gray-700">
+                        <img
+                            v-if="location.image"
+                            :src="location.image"
+                            :alt="location.name"
+                            class="h-full w-full object-cover"
+                        />
+                        <div
+                            v-else
+                            class="flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-100 via-pink-100 to-yellow-100"
+                        >
+                            <MapPin class="h-16 w-16 text-gray-400" />
+                        </div>
                     </div>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                     <div class="absolute bottom-0 left-0 right-0 p-6 text-white">

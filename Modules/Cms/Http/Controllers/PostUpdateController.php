@@ -41,8 +41,12 @@ final class PostUpdateController
         );
         $post->categories()->sync($syncData);
 
+        // Reload the post with fresh relationships
+        $post->refresh();
+        $post->load(['postType', 'categories']);
+
         return redirect()
-            ->route('cms.posts.index')
+            ->route('cms.posts.edit', $post)
             ->with('success', 'Post updated successfully.');
     }
 }

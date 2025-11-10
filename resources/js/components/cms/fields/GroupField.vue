@@ -55,11 +55,22 @@ watch(() => props.modelValue, (newValue) => {
     groupData.value = newValue || {};
 }, { deep: true });
 
-// Initialize empty values for subfields
+// Initialize empty values for subfields based on their type
 if (!props.modelValue) {
     subfields.value?.forEach(subfield => {
         if (!(subfield.name in groupData.value)) {
-            groupData.value[subfield.name] = '';
+            // Initialize with appropriate default value based on field type
+            if (subfield.type === 'repeater' || subfield.type === 'checkbox') {
+                groupData.value[subfield.name] = [];
+            } else if (subfield.type === 'group') {
+                groupData.value[subfield.name] = {};
+            } else if (subfield.type === 'number') {
+                groupData.value[subfield.name] = null;
+            } else if (subfield.type === 'true_false') {
+                groupData.value[subfield.name] = false;
+            } else {
+                groupData.value[subfield.name] = '';
+            }
         }
     });
     emit('update:modelValue', groupData.value);

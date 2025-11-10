@@ -22,6 +22,7 @@ final class CategoryUpdateController
 
         $category->name = $validated['name'];
         $category->slug = $validated['slug'];
+        $category->image = $validated['image'] ?? null;
         $category->description = $validated['description'] ?? null;
         $category->parent_id = $validated['parent_id'] ?? null;
         $category->content = $validated['content'] ?? [];

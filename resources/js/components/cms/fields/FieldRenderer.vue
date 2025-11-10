@@ -5,6 +5,7 @@ import TextareaField from './TextareaField.vue';
 import NumberField from './NumberField.vue';
 import EmailField from './EmailField.vue';
 import UrlField from './UrlField.vue';
+import ImageField from './ImageField.vue';
 import SelectField from './SelectField.vue';
 import CheckboxField from './CheckboxField.vue';
 import RadioField from './RadioField.vue';
@@ -47,6 +48,7 @@ const fieldComponent = computed(() => {
         number: NumberField,
         email: EmailField,
         url: UrlField,
+        image: ImageField,
         wysiwyg: WysiwygField,
         select: SelectField,
         checkbox: CheckboxField,

@@ -66,11 +66,22 @@ watch(() => props.modelValue, (newValue) => {
     items.value = newValue || [];
 }, { deep: true });
 
-// Create empty item based on subfields
+// Create empty item based on subfields with appropriate default values
 const createEmptyItem = (): Record<string, any> => {
     const item: Record<string, any> = {};
     subfields.value?.forEach(subfield => {
-        item[subfield.name] = '';
+        // Initialize with appropriate default value based on field type
+        if (subfield.type === 'repeater' || subfield.type === 'checkbox') {
+            item[subfield.name] = [];
+        } else if (subfield.type === 'group') {
+            item[subfield.name] = {};
+        } else if (subfield.type === 'number') {
+            item[subfield.name] = null;
+        } else if (subfield.type === 'true_false') {
+            item[subfield.name] = false;
+        } else {
+            item[subfield.name] = '';
+        }
     });
     return item;
 };

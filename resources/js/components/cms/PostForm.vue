@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import FieldRenderer from '@/components/cms/fields/FieldRenderer.vue';
 
 interface PostType {
@@ -58,7 +57,8 @@ interface Props {
   post?: Post;
   postTypes: PostType[];
   categories: Category[];
-  fieldGroups: FieldGroup[];
+  fieldGroups?: FieldGroup[];
+  fieldGroupsByPostType?: Record<number, FieldGroup[]>;
   posts?: any[];
   fieldTypes?: any;
 }
@@ -66,15 +66,32 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   posts: () => [],
   fieldTypes: () => ({}),
+  fieldGroups: () => [],
+  fieldGroupsByPostType: () => ({}),
 });
 
 const form = useForm({
   post_type_id: props.post?.post_type_id || (props.postTypes[0]?.id ?? null),
   title: props.post?.title || '',
   slug: props.post?.slug || '',
-  content: props.post?.content || {},
+  content: (props.post?.content && !Array.isArray(props.post.content)) ? props.post.content : {},
   status: props.post?.published_at ? 'published' : 'draft',
   categories: props.post?.categories?.map(c => c.id) || [],
+});
+
+// Computed property to get field groups based on selected post type
+const activeFieldGroups = computed(() => {
+  // If editing, use the fieldGroups prop (from Edit page)
+  if (props.post && props.fieldGroups && props.fieldGroups.length > 0) {
+    return props.fieldGroups;
+  }
+
+  // If creating, use fieldGroupsByPostType based on selected post type
+  if (form.post_type_id && props.fieldGroupsByPostType) {
+    return props.fieldGroupsByPostType[form.post_type_id] || [];
+  }
+
+  return [];
 });
 
 watch(() => form.title, (newTitle) => {
@@ -96,6 +113,7 @@ const submit = (): void => {
 
 const toggleCategory = (categoryId: number, checked: boolean): void => {
   const index = form.categories.indexOf(categoryId);
+
   if (checked && index === -1) {
     form.categories.push(categoryId);
   } else if (!checked && index > -1) {
@@ -106,6 +124,20 @@ const toggleCategory = (categoryId: number, checked: boolean): void => {
 
 <template>
   <form @submit.prevent="submit" class="space-y-8">
+    <!-- Validation Errors Display -->
+    <div v-if="Object.keys(form.errors).length > 0" class="rounded-lg border border-red-500 bg-red-50 dark:bg-red-900/20 p-4">
+      <h3 class="font-semibold text-red-700 dark:text-red-400 mb-2">Validation Errors:</h3>
+      <ul class="list-disc list-inside space-y-1 text-sm text-red-600 dark:text-red-300">
+        <li v-for="(error, key) in form.errors" :key="key">
+          <strong>{{ key }}:</strong> {{ error }}
+        </li>
+      </ul>
+      <details class="mt-3">
+        <summary class="cursor-pointer text-sm text-red-600 dark:text-red-300">Show Raw Errors</summary>
+        <pre class="mt-2 text-xs bg-red-100 dark:bg-red-900/40 p-2 rounded overflow-auto">{{ form.errors }}</pre>
+      </details>
+    </div>
+
     <div class="grid gap-6 md:grid-cols-3">
       <div class="md:col-span-2 space-y-6">
         <div class="space-y-2">
@@ -135,7 +167,7 @@ const toggleCategory = (categoryId: number, checked: boolean): void => {
         </div>
 
         <div
-          v-for="fieldGroup in fieldGroups"
+          v-for="fieldGroup in activeFieldGroups"
           :key="fieldGroup.id"
           class="space-y-4 rounded-lg border p-6"
         >
@@ -185,7 +217,7 @@ const toggleCategory = (categoryId: number, checked: boolean): void => {
 
         <div class="rounded-lg border p-6 space-y-4">
           <h3 class="font-semibold">Post Type</h3>
-          <Select v-model="form.post_type_id">
+          <Select :model-value="String(form.post_type_id)" @update:model-value="(val) => form.post_type_id = Number(val)">
             <SelectTrigger>
               <SelectValue placeholder="Select post type" />
             </SelectTrigger>
@@ -193,7 +225,7 @@ const toggleCategory = (categoryId: number, checked: boolean): void => {
               <SelectItem
                 v-for="postType in postTypes"
                 :key="postType.id"
-                :value="postType.id"
+                :value="String(postType.id)"
               >
                 {{ postType.title }}
               </SelectItem>
@@ -212,10 +244,12 @@ const toggleCategory = (categoryId: number, checked: boolean): void => {
               :key="category.id"
               class="flex items-center space-x-2"
             >
-              <Checkbox
+              <input
+                type="checkbox"
                 :id="`category-${category.id}`"
                 :checked="form.categories.includes(category.id)"
-                @update:checked="(checked) => toggleCategory(category.id, checked)"
+                @change="(e) => toggleCategory(category.id, (e.target as HTMLInputElement).checked)"
+                class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
               />
               <Label
                 :for="`category-${category.id}`"

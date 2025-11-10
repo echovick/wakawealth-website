@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int $id
  * @property string $name
  * @property string $slug
+ * @property string|null $image
  * @property string|null $description
  * @property int|null $parent_id
  * @property array|null $content

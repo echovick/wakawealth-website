@@ -29,6 +29,7 @@ final class CategoryStoreRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255', 'unique:categories,slug'],
+            'image' => ['nullable', 'string', 'max:500'],
             'description' => ['nullable', 'string'],
             'parent_id' => ['nullable', 'integer', 'exists:categories,id'],
             'content' => ['nullable', 'array'],
