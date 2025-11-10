@@ -17,6 +17,7 @@ import PostsField from './PostsField.vue';
 import CategoriesField from './CategoriesField.vue';
 import PostTypesField from './PostTypesField.vue';
 import FieldTypesField from './FieldTypesField.vue';
+import WysiwygField from './WysiwygField.vue';
 
 interface Field {
     name: string;
@@ -46,6 +47,7 @@ const fieldComponent = computed(() => {
         number: NumberField,
         email: EmailField,
         url: UrlField,
+        wysiwyg: WysiwygField,
         select: SelectField,
         checkbox: CheckboxField,
         radio: RadioField,

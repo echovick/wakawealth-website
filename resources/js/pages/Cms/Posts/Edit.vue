@@ -49,6 +49,7 @@ interface Props {
   categories: Category[];
   fieldGroups: FieldGroup[];
   posts?: any[];
+  fieldTypes?: any;
 }
 
 defineProps<Props>();

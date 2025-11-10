@@ -34,7 +34,7 @@ final class PostUpdateRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255', Rule::unique('posts', 'slug')->ignore($postId)],
             'content' => ['nullable', 'array'],
-            'published_at' => ['nullable', 'date'],
+            'status' => ['required', 'string', 'in:draft,published'],
             'categories' => ['nullable', 'array'],
             'categories.*' => ['integer', 'exists:categories,id'],
         ];

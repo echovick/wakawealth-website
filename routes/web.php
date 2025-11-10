@@ -1,21 +1,12 @@
 <?php
 
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\PropertyController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Home', [
-        'stats'              => [
-            'yearsExperience'  => 10,
-            'propertiesSold'   => 500,
-            'satisfiedClients' => 1000,
-            'locations'        => 12,
-        ],
-        'featuredLocations'  => [], // Will be populated from database
-        'featuredProperties' => [], // Will be populated from database
-        'testimonials'       => [], // Will be populated from database
-    ]);
-})->name('home');
+Route::get('/', HomeController::class)->name('home');
 
 Route::get('/about', function () {
     return Inertia::render('About');
@@ -25,11 +16,15 @@ Route::get('/properties', function () {
     return Inertia::render('Properties', [
         'properties' => [], // Will be populated from database
     ]);
-})->name('properties');
+})->name('properties.index');
+
+Route::get('/properties/{slug}', PropertyController::class)->name('properties.show');
 
 Route::get('/locations', function () {
     return Inertia::render('Locations');
-})->name('locations');
+})->name('locations.index');
+
+Route::get('/locations/{slug}', LocationController::class)->name('locations.show');
 
 Route::get('/investment/why-invest', function () {
     return Inertia::render('Investment/WhyInvest');

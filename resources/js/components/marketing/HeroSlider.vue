@@ -1,50 +1,103 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next';
 
-const slides = [
-    {
-        id: 1,
-        title: 'Start the Journey',
-        subtitle: 'Own the Destination',
-        description:
-            'Building wealth through real estate isn\'t about shortcuts—it\'s about taking intentional steps forward.',
-        image: '/images/hero/hero-1.jpg',
-        cta: { text: 'View Properties', href: '/properties' },
-        cta2: { text: 'Learn More', href: '/about' },
-    },
-    {
-        id: 2,
-        title: 'Your Trusted Partner',
-        subtitle: 'In Wealth Building',
-        description:
-            'We walk beside you every step of the way—from first inquiry to portfolio optimization.',
-        image: '/images/hero/hero-2.jpg',
-        cta: { text: 'Explore Locations', href: '/locations' },
-        cta2: { text: 'Calculate ROI', href: '/investment/calculator' },
-    },
-    {
-        id: 3,
-        title: 'Diaspora Investment',
-        subtitle: 'Made Simple',
-        description:
-            'Invest back home with confidence. Virtual tours, trusted local representatives, and regular updates.',
-        image: '/images/hero/hero-3.jpg',
-        cta: { text: 'Diaspora Investment', href: '/investment/diaspora' },
-        cta2: { text: 'Get Started', href: '/contact' },
-    },
-    {
-        id: 4,
-        title: 'Education First',
-        subtitle: 'Investment Always',
-        description:
-            'Learn before you invest. Join our Waka to Wealth workshops and build lasting prosperity.',
-        image: '/images/hero/hero-4.jpg',
-        cta: { text: 'View Workshops', href: '/education/workshops' },
-        cta2: { text: 'Read Blog', href: '/education/blog' },
-    },
-];
+interface CmsSlide {
+    label: string;
+    title: string;
+    subtitle: string;
+    description: string;
+    image: string;
+    cta1: Array<{ text: string; href: string }>;
+}
+
+interface TransformedSlide {
+    id: number;
+    label: string;
+    title: string;
+    subtitle: string;
+    description: string;
+    image: string;
+    cta: { text: string; href: string };
+    cta2: { text: string; href: string };
+}
+
+interface Props {
+    slides?: CmsSlide[];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    slides: () => [
+        {
+            label: 'WAKA WEALTH REALTY',
+            title: 'Start the Journey',
+            subtitle: 'Own the Destination',
+            description:
+                'Building wealth through real estate isn\'t about shortcuts—it\'s about taking intentional steps forward.',
+            image: '/images/hero/hero-1.jpg',
+            cta1: [
+                { text: 'View Properties', href: '/properties' },
+                { text: 'Learn More', href: '/about' },
+            ],
+        },
+        {
+            label: 'WAKA WEALTH REALTY',
+            title: 'Your Trusted Partner',
+            subtitle: 'In Wealth Building',
+            description:
+                'We walk beside you every step of the way—from first inquiry to portfolio optimization.',
+            image: '/images/hero/hero-2.jpg',
+            cta1: [
+                { text: 'Explore Locations', href: '/locations' },
+                { text: 'Calculate ROI', href: '/investment/calculator' },
+            ],
+        },
+        {
+            label: 'WAKA WEALTH REALTY',
+            title: 'Diaspora Investment',
+            subtitle: 'Made Simple',
+            description:
+                'Invest back home with confidence. Virtual tours, trusted local representatives, and regular updates.',
+            image: '/images/hero/hero-3.jpg',
+            cta1: [
+                { text: 'Diaspora Investment', href: '/investment/diaspora' },
+                { text: 'Get Started', href: '/contact' },
+            ],
+        },
+        {
+            label: 'WAKA WEALTH REALTY',
+            title: 'Education First',
+            subtitle: 'Investment Always',
+            description:
+                'Learn before you invest. Join our Waka to Wealth workshops and build lasting prosperity.',
+            image: '/images/hero/hero-4.jpg',
+            cta1: [
+                { text: 'View Workshops', href: '/education/workshops' },
+                { text: 'Read Blog', href: '/education/blog' },
+            ],
+        },
+    ],
+});
+
+// Transform CMS slides to component format
+const transformedSlides = computed<TransformedSlide[]>(() => {
+    // If no slides provided or empty array, return empty (will use v-if guard)
+    if (!props.slides || props.slides.length === 0) {
+        return [];
+    }
+
+    return props.slides.map((slide, index) => ({
+        id: index + 1,
+        label: slide.label,
+        title: slide.title,
+        subtitle: slide.subtitle,
+        description: slide.description,
+        image: slide.image,
+        cta: slide.cta1[0] || { text: '', href: '#' },
+        cta2: slide.cta1[1] || { text: '', href: '#' },
+    }));
+});
 
 const currentSlide = ref(0);
 let intervalId: number | null = null;
@@ -62,12 +115,12 @@ const snowParticles = ref<Array<{ id: number; x: number; delay: number; duration
 let snowId = 0;
 
 const nextSlide = () => {
-    currentSlide.value = (currentSlide.value + 1) % slides.length;
+    currentSlide.value = (currentSlide.value + 1) % transformedSlides.value.length;
 };
 
 const prevSlide = () => {
     currentSlide.value =
-        currentSlide.value === 0 ? slides.length - 1 : currentSlide.value - 1;
+        currentSlide.value === 0 ? transformedSlides.value.length - 1 : currentSlide.value - 1;
 };
 
 const goToSlide = (index: number) => {
@@ -128,6 +181,11 @@ const createSnowParticles = () => {
 };
 
 onMounted(() => {
+    console.log('HeroSlider mounted');
+    console.log('Props slides:', props.slides);
+    console.log('Transformed slides:', transformedSlides.value);
+    console.log('Number of slides:', transformedSlides.value.length);
+
     startAutoplay();
     createSnowParticles();
 
@@ -190,10 +248,18 @@ onUnmounted(() => {
             }"
         />
 
+        <!-- Debug info -->
+        <div v-if="transformedSlides.length === 0" class="absolute inset-0 flex items-center justify-center z-50 bg-black/50 text-white">
+            <div class="text-center">
+                <p class="text-2xl mb-4">No slides available</p>
+                <p class="text-sm">Check console for debugging info</p>
+            </div>
+        </div>
+
         <!-- Slides -->
         <div class="relative h-full w-full">
             <div
-                v-for="(slide, index) in slides"
+                v-for="(slide, index) in transformedSlides"
                 :key="slide.id"
                 :class="[
                     'absolute inset-0 h-full w-full transition-opacity duration-1000',
@@ -216,7 +282,7 @@ onUnmounted(() => {
                             data-aos-delay="200"
                             data-aos-duration="800"
                         >
-                            Waka Wealth Realty
+                            {{ slide.label }}
                         </h2>
                         <h1
                             class="mb-4 text-4xl font-bold leading-tight text-white md:text-5xl lg:text-6xl"
@@ -278,7 +344,7 @@ onUnmounted(() => {
         <!-- Dots Indicator -->
         <div class="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 space-x-3">
             <button
-                v-for="(slide, index) in slides"
+                v-for="(slide, index) in transformedSlides"
                 :key="slide.id"
                 @click="goToSlide(index)"
                 :class="[

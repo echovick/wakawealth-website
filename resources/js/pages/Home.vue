@@ -28,6 +28,28 @@ onMounted(() => {
 });
 
 interface Props {
+    heroSlider?: Array<{
+        label: string;
+        title: string;
+        subtitle: string;
+        description: string;
+        image: string;
+        cta1: Array<{ text: string; href: string }>;
+    }>;
+    aboutSection?: {
+        label: string;
+        title: string;
+        content: string;
+        featured_images: Array<{ images: string }>;
+        core_value_items: Array<{ value_item: string }>;
+        core_values_snippet: string;
+        stats: {
+            count: string;
+            metric: string;
+        };
+        cta_text?: string;
+        cta_url?: string;
+    };
     stats?: {
         yearsExperience: number;
         propertiesSold: number;
@@ -61,7 +83,9 @@ interface Props {
     }>;
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
+    heroSlider: () => [],
+    aboutSection: () => undefined,
     stats: () => ({
         yearsExperience: 10,
         propertiesSold: 500,
@@ -79,13 +103,13 @@ withDefaults(defineProps<Props>(), {
 
     <div class="overflow-hidden">
         <!-- Hero Section -->
-        <HeroSlider />
+        <HeroSlider :slides="heroSlider" />
 
         <!-- Trust Bar -->
         <!-- <TrustBar :stats="stats" /> -->
 
         <!-- About Section -->
-        <AboutSection />
+        <AboutSection :about="aboutSection" />
 
         <!-- Featured Locations -->
         <FeaturedLocations :locations="featuredLocations" />

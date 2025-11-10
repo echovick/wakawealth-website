@@ -27,12 +27,15 @@ final class PostStoreController
         $post->title = $validated['title'];
         $post->slug = $validated['slug'];
         $post->content = $validated['content'] ?? [];
-        $post->published_at = $validated['published_at'] ?? null;
+        $post->published_at = $validated['status'] === 'published' ? now() : null;
         $post->save();
 
-        if (isset($validated['categories'])) {
-            $post->categories()->sync($validated['categories']);
-        }
+        // Always sync categories (even if empty array)
+        $categories = $validated['categories'] ?? [];
+        $syncData = collect($categories)->mapWithKeys(
+            fn($categoryId) => [$categoryId => ['post_type_id' => $post->post_type_id]]
+        );
+        $post->categories()->sync($syncData);
 
         return redirect()
             ->route('cms.posts.index')

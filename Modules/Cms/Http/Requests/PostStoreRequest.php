@@ -31,7 +31,7 @@ final class PostStoreRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255', 'unique:posts,slug'],
             'content' => ['nullable', 'array'],
-            'published_at' => ['nullable', 'date'],
+            'status' => ['required', 'string', 'in:draft,published'],
             'categories' => ['nullable', 'array'],
             'categories.*' => ['integer', 'exists:categories,id'],
         ];

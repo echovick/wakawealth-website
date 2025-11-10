@@ -11,15 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import FieldRenderer from '@/components/cms/fields/FieldRenderer.vue';
-import { CalendarIcon } from 'lucide-vue-next';
 
 interface PostType {
   id: number;
@@ -80,13 +73,9 @@ const form = useForm({
   title: props.post?.title || '',
   slug: props.post?.slug || '',
   content: props.post?.content || {},
-  published_at: props.post?.published_at || null,
+  status: props.post?.published_at ? 'published' : 'draft',
   categories: props.post?.categories?.map(c => c.id) || [],
 });
-
-const publishDate = ref<Date | undefined>(
-  props.post?.published_at ? new Date(props.post.published_at) : undefined
-);
 
 watch(() => form.title, (newTitle) => {
   if (!props.post) {
@@ -97,10 +86,6 @@ watch(() => form.title, (newTitle) => {
   }
 });
 
-watch(publishDate, (newDate) => {
-  form.published_at = newDate ? newDate.toISOString() : null;
-});
-
 const submit = (): void => {
   if (props.post) {
     form.put(`/cms/posts/${props.post.id}`);
@@ -109,21 +94,12 @@ const submit = (): void => {
   }
 };
 
-const formatDate = (date: Date | undefined): string => {
-  if (!date) return 'Pick a date';
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
-
-const toggleCategory = (categoryId: number): void => {
+const toggleCategory = (categoryId: number, checked: boolean): void => {
   const index = form.categories.indexOf(categoryId);
-  if (index > -1) {
-    form.categories.splice(index, 1);
-  } else {
+  if (checked && index === -1) {
     form.categories.push(categoryId);
+  } else if (!checked && index > -1) {
+    form.categories.splice(index, 1);
   }
 };
 </script>
@@ -186,21 +162,16 @@ const toggleCategory = (categoryId: number): void => {
           <h3 class="font-semibold">Publish</h3>
 
           <div class="space-y-2">
-            <Label>Status</Label>
-            <Popover>
-              <PopoverTrigger as-child>
-                <Button
-                  variant="outline"
-                  class="w-full justify-start text-left font-normal"
-                >
-                  <CalendarIcon class="mr-2 h-4 w-4" />
-                  {{ formatDate(publishDate) }}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent class="w-auto p-0">
-                <Calendar v-model="publishDate" />
-              </PopoverContent>
-            </Popover>
+            <Label for="status">Status</Label>
+            <Select v-model="form.status">
+              <SelectTrigger id="status">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="published">Published</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <Button
@@ -244,7 +215,7 @@ const toggleCategory = (categoryId: number): void => {
               <Checkbox
                 :id="`category-${category.id}`"
                 :checked="form.categories.includes(category.id)"
-                @update:checked="toggleCategory(category.id)"
+                @update:checked="(checked) => toggleCategory(category.id, checked)"
               />
               <Label
                 :for="`category-${category.id}`"
