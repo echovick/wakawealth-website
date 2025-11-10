@@ -13,8 +13,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int $user_id
  * @property string $title
  * @property string $slug
+ * @property string|null $image
  * @property array|null $content
  * @property \Illuminate\Support\Carbon|null $published_at
+ * @property bool $is_featured
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  * @property-read \Modules\Cms\Models\PostType $postType
@@ -38,6 +40,7 @@ final class Post extends Model
         return [
             'content' => 'array',
             'published_at' => 'datetime',
+            'is_featured' => 'boolean',
         ];
     }
 

@@ -8,6 +8,35 @@ import 'aos/dist/aos.css';
 
 defineOptions({ layout: MarketingLayout });
 
+interface Location {
+    name: string;
+    slug: string;
+    propertyCount: number;
+    image?: string;
+    description?: string;
+    highlights?: string[];
+}
+
+interface Props {
+    siteLocations?: Location[];
+    homeLocations?: Location[];
+    stats?: {
+        siteLocations: number;
+        homeLocations: number;
+        totalProperties: number;
+    };
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    siteLocations: () => [],
+    homeLocations: () => [],
+    stats: () => ({
+        siteLocations: 0,
+        homeLocations: 0,
+        totalProperties: 0,
+    }),
+});
+
 // Smoke effect state
 const spotlightPosition = ref({ x: 50, y: 50 });
 const smokeParticles = ref<Array<{ id: number; x: number; y: number }>>([]);
@@ -173,15 +202,19 @@ const homeLocations = [
 ];
 
 const displayLocations = computed(() => {
-    return activeTab.value === 'sites' ? siteLocations : homeLocations;
+    // Use props if available, fallback to mock data
+    if (activeTab.value === 'sites') {
+        return props.siteLocations.length > 0 ? props.siteLocations : siteLocations;
+    }
+    return props.homeLocations.length > 0 ? props.homeLocations : homeLocations;
 });
 
-const stats = [
-    { number: '11', label: 'Site Locations', icon: Building2 },
-    { number: '6', label: 'Home Locations', icon: Home },
-    { number: '450+', label: 'Properties', icon: MapPin },
+const statsDisplay = computed(() => [
+    { number: String(props.stats.siteLocations), label: 'Site Locations', icon: Building2 },
+    { number: String(props.stats.homeLocations), label: 'Home Locations', icon: Home },
+    { number: String(props.stats.totalProperties), label: 'Properties', icon: MapPin },
     { number: '15%', label: 'Avg. ROI', icon: TrendingUp },
-];
+]);
 </script>
 
 <template>
@@ -240,7 +273,7 @@ const stats = [
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-2 gap-8 md:grid-cols-4">
                     <div
-                        v-for="(stat, index) in stats"
+                        v-for="(stat, index) in statsDisplay"
                         :key="index"
                         class="text-center"
                         data-aos="fade-up"
@@ -309,6 +342,12 @@ const stats = [
                     >
                         <!-- Location Image/Gradient -->
                         <div class="relative h-48 bg-gradient-to-br from-orange-100 via-pink-100 to-yellow-100">
+                            <img
+                                v-if="location.image"
+                                :src="location.image"
+                                :alt="location.name"
+                                class="h-full w-full object-cover"
+                            />
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
 
                             <!-- Location Badge -->
@@ -329,12 +368,12 @@ const stats = [
 
                         <!-- Location Details -->
                         <div class="p-6">
-                            <p class="mb-4 text-gray-300 leading-relaxed">
+                            <p v-if="location.description" class="mb-4 text-gray-300 leading-relaxed">
                                 {{ location.description }}
                             </p>
 
                             <!-- Highlights -->
-                            <div class="mb-4 flex flex-wrap gap-2">
+                            <div v-if="location.highlights && location.highlights.length > 0" class="mb-4 flex flex-wrap gap-2">
                                 <span
                                     v-for="highlight in location.highlights"
                                     :key="highlight"

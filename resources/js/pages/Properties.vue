@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import MarketingLayout from '@/layouts/MarketingLayout.vue';
-import { MapPin, Home, DollarSign, Maximize, Filter, X, ArrowRight } from 'lucide-vue-next';
+import { MapPin, Home, Maximize, Filter, X, ArrowRight } from 'lucide-vue-next';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -141,17 +141,25 @@ const mockProperties = [
     },
 ];
 
-const siteLocations = ['Wuye', 'Kukwaba', 'Katampe', 'Lifecamp', 'Karsana', 'Kabusa', 'Apo-Wasa', 'Idu', 'Lugbe', 'Kyami', 'Gwagwalada'];
-const homeLocations = ['Wuye', 'Lifecamp', 'Guzape', 'Gaduwa', 'Kaura', 'Idu'];
-
 const propertyType = ref<'all' | 'site' | 'home'>('all');
 const selectedLocation = ref<string | null>(null);
 const showFilters = ref(false);
 
 const availableLocations = computed(() => {
-    if (propertyType.value === 'site') return siteLocations;
-    if (propertyType.value === 'home') return homeLocations;
-    return [...new Set([...siteLocations, ...homeLocations])].sort();
+    const allProperties = props.properties.length > 0 ? props.properties : mockProperties;
+
+    let filteredProperties = allProperties;
+    if (propertyType.value === 'site') {
+        filteredProperties = allProperties.filter(p => p.type === 'site');
+    } else if (propertyType.value === 'home') {
+        filteredProperties = allProperties.filter(p => p.type === 'home');
+    }
+
+    const locations = filteredProperties
+        .map(p => p.location)
+        .filter(loc => loc && loc !== 'N/A');
+
+    return [...new Set(locations)].sort();
 });
 
 const displayProperties = computed(() => {
@@ -350,6 +358,12 @@ const clearFilters = () => {
                     >
                         <!-- Property Image -->
                         <div class="relative aspect-[4/3] bg-gradient-to-br from-orange-100 via-pink-100 to-yellow-100 overflow-hidden">
+                            <img
+                                v-if="property.image"
+                                :src="property.image"
+                                :alt="property.title"
+                                class="h-full w-full object-cover transition-transform group-hover:scale-110"
+                            />
                             <div class="absolute top-4 left-4 flex flex-col gap-2">
                                 <span
                                     :class="[
@@ -393,8 +407,7 @@ const clearFilters = () => {
                                 </div>
                             </div>
 
-                            <div class="mb-4 flex items-center gap-2">
-                                <DollarSign class="h-5 w-5 text-[#D31C00]" />
+                            <div class="mb-4">
                                 <span class="text-2xl font-bold text-white">{{ formatPrice(property.price) }}</span>
                             </div>
 

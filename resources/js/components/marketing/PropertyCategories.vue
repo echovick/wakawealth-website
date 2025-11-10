@@ -1,22 +1,44 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 
 interface Property {
     id: number;
     title: string;
-    type: 'site' | 'home';
-    location: string;
-    price: number;
-    size: string;
-    image: string;
     slug: string;
+    price: number;
+    image: string | null;
+    location: string;
 }
 
-interface Props {
+interface PropertyType {
+    id: number;
+    name: string;
+    slug: string;
     properties: Property[];
 }
 
-defineProps<Props>();
+interface Props {
+    featuredProperties: Record<string, PropertyType>;
+    propertyTypes: Array<{ id: number; name: string; slug: string }>;
+}
+
+const props = defineProps<Props>();
+
+// Set initial active tab to first property type (or 'homes' if available)
+const activeTab = ref(props.propertyTypes[0]?.slug || 'homes');
+
+const currentProperties = () => {
+    return props.featuredProperties[activeTab.value]?.properties || [];
+};
+
+const formatPrice = (price: number): string => {
+    return new Intl.NumberFormat('en-NG', {
+        style: 'currency',
+        currency: 'NGN',
+        minimumFractionDigits: 0,
+    }).format(price);
+};
 </script>
 
 <template>
@@ -34,48 +56,62 @@ defineProps<Props>();
 
             <!-- Property Categories Tabs -->
             <div class="mb-8 flex justify-center space-x-4" data-aos="fade-up" data-aos-delay="200">
-                <Link
-                    href="/properties/sites"
-                    class="rounded-full bg-[#D31C00] px-8 py-3 font-semibold text-white transition hover:bg-[#B01700]"
+                <button
+                    v-for="propertyType in propertyTypes"
+                    :key="propertyType.slug"
+                    @click="activeTab = propertyType.slug"
+                    :class="[
+                        'rounded-full px-8 py-3 font-semibold transition',
+                        activeTab === propertyType.slug
+                            ? 'bg-[#D31C00] text-white hover:bg-[#B01700]'
+                            : 'border-2 border-white text-white hover:bg-white hover:text-black'
+                    ]"
                 >
-                    Sites & Services
-                </Link>
-                <Link
-                    href="/properties/homes"
-                    class="rounded-full border-2 border-white px-8 py-3 font-semibold text-white transition hover:bg-white hover:text-black"
-                >
-                    Homes
-                </Link>
+                    {{ propertyType.name }}
+                </button>
             </div>
 
-            <!-- Featured Properties Grid - Mock for now -->
-            <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                <div
-                    v-for="i in 3"
-                    :key="i"
+            <!-- Featured Properties Grid -->
+            <div v-if="currentProperties().length > 0" class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                <Link
+                    v-for="(property, index) in currentProperties()"
+                    :key="property.id"
+                    :href="`/properties/${property.slug}`"
                     class="group overflow-hidden rounded-2xl bg-gray-800 shadow-sm transition-shadow hover:shadow-xl border border-gray-700"
                     data-aos="fade-up"
-                    :data-aos-delay="300 + (i * 100)"
+                    :data-aos-delay="300 + (index * 100)"
                 >
-                    <div class="aspect-[4/3] bg-gradient-to-br from-orange-100 via-pink-100 to-yellow-100" />
+                    <div class="aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-700 to-gray-800">
+                        <img
+                            v-if="property.image"
+                            :src="property.image"
+                            :alt="property.title"
+                            class="h-full w-full object-cover transition-transform group-hover:scale-110"
+                        />
+                        <div
+                            v-else
+                            class="flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-100 via-pink-100 to-yellow-100"
+                        />
+                    </div>
                     <div class="p-6">
                         <div class="mb-2 flex items-center justify-between">
                             <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">Available</span>
-                            <span class="text-xs text-gray-500">Wuye, Abuja</span>
+                            <span v-if="property.location" class="text-xs text-gray-400">{{ property.location }}</span>
                         </div>
-                        <h3 class="mb-2 text-xl font-bold text-white">Property Title {{ i }}</h3>
-                        <div class="mb-4 flex items-center justify-between text-sm text-gray-400">
-                            <span>500 sqm</span>
-                            <span class="font-bold text-red-600">₦15,000,000</span>
+                        <h3 class="mb-2 text-xl font-bold text-white line-clamp-2">{{ property.title }}</h3>
+                        <div class="mb-4 flex items-center justify-between text-sm">
+                            <span class="font-bold text-[#D31C00]">{{ formatPrice(property.price) }}</span>
                         </div>
-                        <Link
-                            href="/properties/site/property-slug"
-                            class="block w-full rounded-sm bg-black py-3 text-center font-semibold text-white transition hover:bg-red-600"
-                        >
+                        <div class="block w-full rounded-sm bg-black py-3 text-center font-semibold text-white transition group-hover:bg-[#D31C00]">
                             View Details
-                        </Link>
+                        </div>
                     </div>
-                </div>
+                </Link>
+            </div>
+
+            <!-- Empty State -->
+            <div v-else class="py-16 text-center">
+                <p class="text-lg text-gray-400">No featured properties available in this category.</p>
             </div>
 
             <div class="mt-12 text-center">

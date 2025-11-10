@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Cms\Models\Category;
 use Modules\Cms\Models\Page;
+use Modules\Cms\Models\Post;
 
 final class HomeController
 {
@@ -57,6 +58,55 @@ final class HomeController
             ];
         })->toArray();
 
+        // Get property type categories (Homes, Sites & Services)
+        $propertyTypeCategories = Category::query()
+            ->where('parent_id', 8) // Property Types parent category
+            ->orderBy('name')
+            ->get();
+
+        // Get featured properties grouped by property type category
+        $featuredPropertiesByType = [];
+        foreach ($propertyTypeCategories as $propertyType) {
+            $properties = Post::query()
+                ->where('post_type_id', 4) // Properties post type
+                ->where('is_featured', true)
+                ->whereHas('categories', function ($query) use ($propertyType) {
+                    $query->where('categories.id', $propertyType->id);
+                })
+                ->with(['categories:id,name,slug'])
+                ->orderBy('created_at', 'desc')
+                ->limit(6)
+                ->get();
+
+            $featuredPropertiesByType[$propertyType->slug] = [
+                'id' => $propertyType->id,
+                'name' => $propertyType->name,
+                'slug' => $propertyType->slug,
+                'properties' => $properties->map(function ($property) use ($propertyType) {
+                    // Use post image first, fallback to first gallery image
+                    $image = $property->image;
+
+                    if (!$image && isset($property->content['gallery']) && is_array($property->content['gallery']) && count($property->content['gallery']) > 0) {
+                        $firstImage = $property->content['gallery'][0];
+                        $image = $firstImage['image'] ?? null;
+                    }
+
+                    // Get location category (parent_id = 1)
+                    $location = $property->categories->first(fn($cat) => $cat->id !== $propertyType->id);
+
+                    return [
+                        'id' => $property->id,
+                        'title' => $property->title,
+                        'slug' => $property->slug,
+                        'price' => $property->content['price'] ?? 0,
+                        'image' => $image,
+                        'location' => $location?->name,
+                        'published_at' => $property->published_at,
+                    ];
+                })->toArray(),
+            ];
+        }
+
         return Inertia::render('Home', [
             'heroSlider'         => $heroSlider,
             'aboutSection'       => $aboutSection,
@@ -67,7 +117,8 @@ final class HomeController
                 'locations'        => 12,
             ],
             'featuredLocations'  => $featuredLocations,
-            'featuredProperties' => [], // Will be populated from database
+            'featuredProperties' => $featuredPropertiesByType,
+            'propertyTypes'      => $propertyTypeCategories->toArray(),
             'testimonials'       => [], // Will be populated from database
         ]);
     }

@@ -48,8 +48,10 @@ interface Post {
   post_type_id: number;
   title: string;
   slug: string;
+  image: string | null;
   content: Record<string, any>;
   published_at: string | null;
+  is_featured: boolean;
   categories: Array<{ id: number }>;
 }
 
@@ -74,8 +76,10 @@ const form = useForm({
   post_type_id: props.post?.post_type_id || (props.postTypes[0]?.id ?? null),
   title: props.post?.title || '',
   slug: props.post?.slug || '',
+  image: props.post?.image || '',
   content: (props.post?.content && !Array.isArray(props.post.content)) ? props.post.content : {},
   status: props.post?.published_at ? 'published' : 'draft',
+  is_featured: props.post?.is_featured || false,
   categories: props.post?.categories?.map(c => c.id) || [],
 });
 
@@ -166,6 +170,22 @@ const toggleCategory = (categoryId: number, checked: boolean): void => {
           </p>
         </div>
 
+        <div class="space-y-2">
+          <Label for="image">Featured Image URL</Label>
+          <Input
+            id="image"
+            v-model="form.image"
+            type="url"
+            placeholder="https://example.com/image.jpg"
+          />
+          <p class="text-xs text-muted-foreground">
+            Optional - Enter the URL of a featured image for this post
+          </p>
+          <p v-if="form.errors.image" class="text-sm text-destructive">
+            {{ form.errors.image }}
+          </p>
+        </div>
+
         <div
           v-for="fieldGroup in activeFieldGroups"
           :key="fieldGroup.id"
@@ -204,6 +224,21 @@ const toggleCategory = (categoryId: number, checked: boolean): void => {
                 <SelectItem value="published">Published</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="is_featured"
+              v-model="form.is_featured"
+              class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+            />
+            <Label
+              for="is_featured"
+              class="text-sm font-normal cursor-pointer"
+            >
+              Featured Post
+            </Label>
           </div>
 
           <Button

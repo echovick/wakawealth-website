@@ -26,8 +26,10 @@ final class PostStoreController
         $post->user_id = Auth::id();
         $post->title = $validated['title'];
         $post->slug = $validated['slug'];
+        $post->image = $validated['image'] ?? null;
         $post->content = $validated['content'] ?? [];
         $post->published_at = $validated['status'] === 'published' ? now() : null;
+        $post->is_featured = $validated['is_featured'] ?? false;
         $post->save();
 
         // Always sync categories (even if empty array)

@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\LocationsController;
+use App\Http\Controllers\PropertiesController;
 use App\Http\Controllers\PropertyController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -12,17 +14,11 @@ Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
 
-Route::get('/properties', function () {
-    return Inertia::render('Properties', [
-        'properties' => [], // Will be populated from database
-    ]);
-})->name('properties.index');
+Route::get('/properties', PropertiesController::class)->name('properties.index');
 
 Route::get('/properties/{slug}', PropertyController::class)->name('properties.show');
 
-Route::get('/locations', function () {
-    return Inertia::render('Locations');
-})->name('locations.index');
+Route::get('/locations', LocationsController::class)->name('locations.index');
 
 Route::get('/locations/{slug}', LocationController::class)->name('locations.show');
 

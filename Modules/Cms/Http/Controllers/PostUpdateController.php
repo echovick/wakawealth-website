@@ -23,7 +23,9 @@ final class PostUpdateController
         $post->post_type_id = $validated['post_type_id'];
         $post->title = $validated['title'];
         $post->slug = $validated['slug'];
+        $post->image = $validated['image'] ?? null;
         $post->content = $validated['content'] ?? [];
+        $post->is_featured = $validated['is_featured'] ?? false;
 
         // Only set published_at if transitioning from draft to published
         if ($validated['status'] === 'published' && !$post->published_at) {

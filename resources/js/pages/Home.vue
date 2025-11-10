@@ -63,14 +63,22 @@ interface Props {
         image: string;
         propertyCount: number;
     }>;
-    featuredProperties?: Array<{
+    featuredProperties?: Record<string, {
         id: number;
-        title: string;
-        type: 'site' | 'home';
-        location: string;
-        price: number;
-        size: string;
-        image: string;
+        name: string;
+        slug: string;
+        properties: Array<{
+            id: number;
+            title: string;
+            slug: string;
+            price: number;
+            image: string | null;
+            location: string;
+        }>;
+    }>;
+    propertyTypes?: Array<{
+        id: number;
+        name: string;
         slug: string;
     }>;
     testimonials?: Array<{
@@ -93,7 +101,8 @@ const props = withDefaults(defineProps<Props>(), {
         locations: 12,
     }),
     featuredLocations: () => [],
-    featuredProperties: () => [],
+    featuredProperties: () => ({}),
+    propertyTypes: () => [],
     testimonials: () => [],
 });
 </script>
@@ -115,7 +124,7 @@ const props = withDefaults(defineProps<Props>(), {
         <FeaturedLocations :locations="featuredLocations" />
 
         <!-- Property Categories -->
-        <PropertyCategories :properties="featuredProperties" />
+        <PropertyCategories :featured-properties="featuredProperties" :property-types="propertyTypes" />
 
         <!-- Why Choose Us -->
         <WhyChooseUs />
