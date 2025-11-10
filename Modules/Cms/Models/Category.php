@@ -7,12 +7,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property int $id
- * @property string $title
+ * @property string $name
+ * @property string $slug
  * @property string|null $description
+ * @property int|null $parent_id
  * @property array|null $content
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Modules\Cms\Models\Post> $posts
+ * @property-read int $posts_count
  */
 final class Category extends Model
 {

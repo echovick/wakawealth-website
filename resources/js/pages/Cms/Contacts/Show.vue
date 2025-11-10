@@ -2,7 +2,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import CmsLayout from '@/layouts/cms/CmsLayout.vue';
 
-declare const route: any;
+const route = (window as any).route;
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Trash2 } from 'lucide-vue-next';
 

@@ -15,11 +15,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 final class Page extends Model
 {
-    /** @var array<string, scalar|bool|null> Default values for Eloquent attributes */
-    protected $attributes = [
-        'content' => '{}',
-    ];
-
     /**
      * Get the attributes that should be cast.
      *

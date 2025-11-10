@@ -2,8 +2,6 @@
 import { ref } from 'vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import CmsLayout from '@/layouts/cms/CmsLayout.vue';
-
-declare const route: any;
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -81,7 +79,7 @@ const editForm = useForm({
 });
 
 const createCategory = (): void => {
-  createForm.post(route('cms.categories.store'), {
+  createForm.post('/cms/categories', {
     onSuccess: () => {
       isCreateDialogOpen.value = false;
       createForm.reset();
@@ -101,7 +99,7 @@ const openEditDialog = (category: Category): void => {
 const updateCategory = (): void => {
   if (!editingCategory.value) return;
 
-  editForm.put(route('cms.categories.update', editingCategory.value.id), {
+  editForm.put(`/cms/categories/${editingCategory.value.id}`, {
     onSuccess: () => {
       isEditDialogOpen.value = false;
       editForm.reset();
@@ -112,7 +110,7 @@ const updateCategory = (): void => {
 
 const deleteCategory = (categoryId: number): void => {
   if (confirm('Are you sure you want to delete this category?')) {
-    router.delete(route('cms.categories.destroy', categoryId));
+    router.delete(`/cms/categories/${categoryId}`);
   }
 };
 

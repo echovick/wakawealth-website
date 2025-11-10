@@ -11,6 +11,8 @@ import RadioField from './RadioField.vue';
 import TrueFalseField from './TrueFalseField.vue';
 import DatePickerField from './DatePickerField.vue';
 import TimePickerField from './TimePickerField.vue';
+import RepeaterField from './RepeaterField.vue';
+import GroupField from './GroupField.vue';
 
 interface Field {
     name: string;
@@ -42,6 +44,8 @@ const fieldComponent = computed(() => {
         true_false: TrueFalseField,
         date_picker: DatePickerField,
         time_picker: TimePickerField,
+        repeater: RepeaterField,
+        group: GroupField,
     };
 
     return componentMap[props.field.type] || TextField;

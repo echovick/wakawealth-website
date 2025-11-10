@@ -2,8 +2,6 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import CmsLayout from '@/layouts/cms/CmsLayout.vue';
 import { Button } from '@/components/ui/button';
-
-declare const route: any;
 import {
   Table,
   TableBody,
@@ -51,7 +49,7 @@ const props = defineProps<Props>();
 
 const deletePost = (postId: number): void => {
   if (confirm('Are you sure you want to delete this post?')) {
-    router.delete(route('cms.posts.destroy', postId));
+    router.delete(`/cms/posts/${postId}`);
   }
 };
 
@@ -77,7 +75,7 @@ const formatDate = (date: string | null): string => {
             Manage your blog posts and custom post types
           </p>
         </div>
-        <Link :href="route('cms.posts.create')">
+        <Link href="/cms/posts/create">
           <Button>
             <Plus class="mr-2 h-4 w-4" />
             New Post
@@ -131,7 +129,7 @@ const formatDate = (date: string | null): string => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem as-child>
-                      <Link :href="route('cms.posts.edit', post.id)">
+                      <Link :href="`/cms/posts/${post.id}/edit`">
                         Edit
                       </Link>
                     </DropdownMenuItem>

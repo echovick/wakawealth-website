@@ -50,11 +50,18 @@ const props = withDefaults(defineProps<Props>(), {
     submitMethod: 'post',
 });
 
+// Normalize content to ensure it's always an object, not an array
+const normalizeContent = (content: any): Record<string, any> => {
+    if (!content) return {};
+    if (Array.isArray(content)) return {};
+    return content;
+};
+
 const form = useForm({
     slug: props.page?.slug || '',
     title: props.page?.title || '',
     description: props.page?.description || '',
-    content: props.page?.content || {},
+    content: normalizeContent(props.page?.content),
 });
 
 const generateSlug = () => {
@@ -97,7 +104,6 @@ const submit = () => {
                     id="slug"
                     v-model="form.slug"
                     type="text"
-                    required
                 />
                 <p class="text-sm text-muted-foreground">
                     URL: /{{ form.slug }}

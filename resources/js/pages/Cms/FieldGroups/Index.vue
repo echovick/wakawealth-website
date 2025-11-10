@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import CmsLayout from '@/layouts/cms/CmsLayout.vue';
-
-declare const route: any;
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -44,12 +42,12 @@ const props = defineProps<Props>();
 
 const deleteFieldGroup = (fieldGroupId: number): void => {
   if (confirm('Are you sure you want to delete this field group? All associated fields will be deleted.')) {
-    router.delete(route('cms.field-groups.destroy', fieldGroupId));
+    router.delete(`/cms/field-groups/${fieldGroupId}`);
   }
 };
 
 const toggleActive = (fieldGroup: FieldGroup): void => {
-  router.put(route('cms.field-groups.update', fieldGroup.id), {
+  router.put(`/cms/field-groups/${fieldGroup.id}`, {
     ...fieldGroup,
     active: !fieldGroup.active,
   }, {
@@ -70,7 +68,7 @@ const toggleActive = (fieldGroup: FieldGroup): void => {
             Create and manage custom field groups for your content
           </p>
         </div>
-        <Link :href="route('cms.field-groups.create')">
+        <Link href="/cms/field-groups/create">
           <Button>
             <Plus class="mr-2 h-4 w-4" />
             New Field Group
@@ -116,7 +114,7 @@ const toggleActive = (fieldGroup: FieldGroup): void => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem as-child>
-                      <Link :href="route('cms.field-groups.edit', fieldGroup.id)">
+                      <Link :href="`/cms/field-groups/${fieldGroup.id}/edit`">
                         Edit
                       </Link>
                     </DropdownMenuItem>

@@ -63,7 +63,7 @@ final readonly class FieldGroupResolverService
     }
 
     /**
-     * Check if a single location rule matches
+     * Check if a single location rule matches (ACF-style rules)
      *
      * @param \Modules\Cms\Models\FieldGroupLocation $rule
      * @param string $entityType
@@ -76,23 +76,44 @@ final readonly class FieldGroupResolverService
         $operator = $rule->operator;
         $value = $rule->value;
 
-        // Match by entity type
-        if ($param === 'entity_type') {
-            return $this->compareValues($entityType, $operator, $value);
+        // Handle post_type param (determines entity type)
+        if ($param === 'post_type') {
+            // Check if it matches the entity type string
+            if ($value === 'page' && $entityType === 'page') {
+                return true;
+            }
+            if ($value === 'post' && $entityType === 'post') {
+                return true;
+            }
+            if ($value === 'category' && $entityType === 'category') {
+                return true;
+            }
+
+            // Check if it's a post type ID for posts
+            if ($entityType === 'post' && $entity !== null) {
+                if (isset($entity->post_type_id)) {
+                    return $this->compareValues($entity->post_type_id, $operator, $value);
+                }
+            }
+
+            return false;
         }
 
-        // Match by specific entity attribute
+        // Handle specific entity ID checks
         if ($entity !== null) {
-            if ($param === 'entity_id') {
+            // Check for specific page
+            if ($param === 'page' && $entityType === 'page') {
                 return $this->compareValues($entity->id, $operator, $value);
             }
 
-            // Match by model attribute (e.g., slug, post_type_id)
-            if (str_starts_with($param, 'entity.')) {
-                $attribute = substr($param, 7);
-                if (isset($entity->$attribute)) {
-                    return $this->compareValues($entity->$attribute, $operator, $value);
-                }
+            // Check for specific post
+            if ($param === 'post' && $entityType === 'post') {
+                return $this->compareValues($entity->id, $operator, $value);
+            }
+
+            // Check for specific category
+            if ($param === 'category' && $entityType === 'category') {
+                return $this->compareValues($entity->id, $operator, $value);
             }
         }
 

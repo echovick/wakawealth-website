@@ -2,6 +2,8 @@
 
 namespace Modules\Cms\Actions;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Modules\Cms\Models\Page;
 
 final readonly class CreatePageAction
@@ -14,13 +16,25 @@ final readonly class CreatePageAction
      */
     public function execute(array $data): Page
     {
-        $page = new Page();
-        $page->slug = $data['slug'];
-        $page->title = $data['title'];
-        $page->description = $data['description'] ?? null;
-        $page->content = $data['content'] ?? [];
-        $page->save();
+        return DB::transaction(function () use ($data) {
+            $page = new Page();
+            $page->slug = $data['slug'];
+            $page->title = $data['title'];
+            $page->description = $data['description'] ?? null;
 
-        return $page;
+            // Ensure empty content is saved as object, not array
+            $content = $data['content'] ?? [];
+            $page->content = empty($content) ? (object) [] : $content;
+
+            $page->save();
+
+            Log::info('Page created', [
+                'page_id' => $page->id,
+                'slug' => $page->slug,
+                'content_keys' => array_keys($content),
+            ]);
+
+            return $page;
+        });
     }
 }

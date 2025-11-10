@@ -151,7 +151,16 @@ final readonly class FieldRegistryService
                     'button_label' => 'Add Row',
                     'min' => 0,
                     'max' => 0,
-                    'sub_fields' => [],
+                    'subfields' => [],
+                ],
+            ],
+            'group' => [
+                'label' => 'Group',
+                'icon' => 'folder',
+                'category' => 'layout',
+                'config' => [
+                    'layout' => 'block',
+                    'subfields' => [],
                 ],
             ],
             'flexible_content' => [
@@ -189,6 +198,25 @@ final readonly class FieldRegistryService
     public function hasFieldType(string $type): bool
     {
         return isset($this->getFieldTypes()[$type]);
+    }
+
+    /**
+     * Get field types formatted for form usage
+     *
+     * @return array<int, array{type: string, label: string, icon: string, category: string}>
+     */
+    public function getFieldTypesForForm(): array
+    {
+        $types = [];
+        foreach ($this->getFieldTypes() as $key => $config) {
+            $types[] = [
+                'type' => $key,
+                'label' => $config['label'],
+                'icon' => $config['icon'],
+                'category' => $config['category'] ?? 'basic',
+            ];
+        }
+        return $types;
     }
 
     /**

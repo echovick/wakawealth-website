@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
-import { route } from 'ziggy-js';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -99,9 +98,9 @@ watch(publishDate, (newDate) => {
 
 const submit = (): void => {
   if (props.post) {
-    form.put(route('cms.posts.update', props.post.id));
+    form.put(`/cms/posts/${props.post.id}`);
   } else {
-    form.post(route('cms.posts.store'));
+    form.post('/cms/posts');
   }
 };
 

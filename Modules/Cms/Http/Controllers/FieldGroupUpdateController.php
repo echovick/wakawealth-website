@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Modules\Cms\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Modules\Cms\Http\Requests\FieldGroupUpdateRequest;
 use Modules\Cms\Models\Field;
 use Modules\Cms\Models\FieldGroup;
@@ -16,53 +18,155 @@ use Modules\Cms\Models\FieldGroupLocation;
 final class FieldGroupUpdateController
 {
     /**
+     * Convert UI location data to ACF-style rules
+     *
+     * @param array<string, mixed> $locationData
+     * @return array<int, array<string, string>>
+     */
+    private function convertToRules(array $locationData): array
+    {
+        $entityType = $locationData['entity_type'];
+        $entityId = $locationData['entity_id'] ?? null;
+
+        $rules = [];
+
+        // Add post_type rule
+        if ($entityType === 'post_type') {
+            $rules[] = [
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => (string) $entityId,
+            ];
+        } elseif ($entityType === 'page') {
+            $rules[] = [
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'page',
+            ];
+
+            // If specific page selected
+            if ($entityId !== null) {
+                $rules[] = [
+                    'param' => 'page',
+                    'operator' => '==',
+                    'value' => (string) $entityId,
+                ];
+            }
+        } elseif ($entityType === 'post') {
+            $rules[] = [
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'post',
+            ];
+
+            // If specific post selected
+            if ($entityId !== null) {
+                $rules[] = [
+                    'param' => 'post',
+                    'operator' => '==',
+                    'value' => (string) $entityId,
+                ];
+            }
+        } elseif ($entityType === 'category') {
+            $rules[] = [
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'category',
+            ];
+
+            // If specific category selected
+            if ($entityId !== null) {
+                $rules[] = [
+                    'param' => 'category',
+                    'operator' => '==',
+                    'value' => (string) $entityId,
+                ];
+            }
+        }
+
+        return $rules;
+    }
+
+    /**
      * Update the specified field group in storage.
      */
     public function __invoke(FieldGroupUpdateRequest $request, FieldGroup $fieldGroup): RedirectResponse
     {
         $validated = $request->validated();
 
-        $fieldGroup->title = $validated['title'];
-        $fieldGroup->key = $validated['key'];
-        $fieldGroup->position = $validated['position'] ?? 'normal';
-        $fieldGroup->style = $validated['style'] ?? 'default';
-        $fieldGroup->active = $validated['active'] ?? true;
-        $fieldGroup->save();
+        try {
+            DB::transaction(function () use ($validated, $fieldGroup) {
+                $fieldGroup->title = $validated['title'];
+                $fieldGroup->key = $validated['key'];
+                $fieldGroup->position = $validated['position'] ?? 'normal';
+                $fieldGroup->style = $validated['style'] ?? 'default';
+                $fieldGroup->active = $validated['active'] ?? true;
+                $fieldGroup->save();
 
-        $fieldGroup->fields()->delete();
+                Log::info('Field group updated', ['field_group_id' => $fieldGroup->id]);
 
-        if (isset($validated['fields'])) {
-            foreach ($validated['fields'] as $index => $fieldData) {
-                $field = new Field();
-                $field->field_group_id = $fieldGroup->id;
-                $field->key = $fieldData['key'];
-                $field->label = $fieldData['label'];
-                $field->name = $fieldData['name'];
-                $field->type = $fieldData['type'];
-                $field->instructions = $fieldData['instructions'] ?? '';
-                $field->required = $fieldData['required'] ?? false;
-                $field->conditional_logic = $fieldData['conditional_logic'] ?? [];
-                $field->field_config = $fieldData['field_config'] ?? [];
-                $field->order = $index;
-                $field->save();
-            }
+                $fieldGroup->fields()->delete();
+
+                if (isset($validated['fields'])) {
+                    foreach ($validated['fields'] as $index => $fieldData) {
+                        $field = new Field();
+                        $field->field_group_id = $fieldGroup->id;
+                        $field->key = $fieldData['key'];
+                        $field->label = $fieldData['label'];
+                        $field->name = $fieldData['name'];
+                        $field->type = $fieldData['type'];
+                        $field->instructions = $fieldData['instructions'] ?? '';
+                        $field->required = $fieldData['required'] ?? false;
+
+                        // Ensure empty arrays are saved as objects in JSON
+                        $conditionalLogic = $fieldData['conditional_logic'] ?? [];
+                        $field->conditional_logic = empty($conditionalLogic) ? (object) [] : $conditionalLogic;
+
+                        $fieldConfig = $fieldData['field_config'] ?? [];
+                        $field->field_config = empty($fieldConfig) ? (object) [] : $fieldConfig;
+
+                        $field->order = $index;
+                        $field->save();
+
+                        Log::info('Field saved', ['field_id' => $field->id, 'key' => $field->key]);
+                    }
+                }
+
+                $fieldGroup->locations()->delete();
+
+                if (isset($validated['locations'])) {
+                    foreach ($validated['locations'] as $index => $locationData) {
+                        $rules = $this->convertToRules($locationData);
+
+                        foreach ($rules as $rule) {
+                            $location = new FieldGroupLocation();
+                            $location->field_group_id = $fieldGroup->id;
+                            $location->rule_group = $index;
+                            $location->param = $rule['param'];
+                            $location->operator = $rule['operator'];
+                            $location->value = $rule['value'];
+                            $location->save();
+
+                            Log::info('Location saved', ['location_id' => $location->id]);
+                        }
+                    }
+                }
+            });
+
+            return redirect()
+                ->route('cms.field-groups.edit', $fieldGroup)
+                ->with('success', 'Field group updated successfully.');
+        } catch (\Exception $e) {
+            Log::error('Failed to update field group', [
+                'field_group_id' => $fieldGroup->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to update field group: '.$e->getMessage()]);
         }
-
-        $fieldGroup->locations()->delete();
-
-        if (isset($validated['locations'])) {
-            foreach ($validated['locations'] as $locationData) {
-                $location = new FieldGroupLocation();
-                $location->field_group_id = $fieldGroup->id;
-                $location->entity_type = $locationData['entity_type'];
-                $location->entity_id = $locationData['entity_id'] ?? null;
-                $location->rules = $locationData['rules'] ?? [];
-                $location->save();
-            }
-        }
-
-        return redirect()
-            ->route('cms.field-groups.index')
-            ->with('success', 'Field group updated successfully.');
     }
 }

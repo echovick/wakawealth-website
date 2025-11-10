@@ -9,8 +9,33 @@ interface FieldType {
   icon: string;
 }
 
+interface Page {
+  id: number;
+  title: string;
+}
+
+interface Post {
+  id: number;
+  title: string;
+  post_type_id: number;
+}
+
+interface PostType {
+  id: number;
+  title: string;
+}
+
+interface Category {
+  id: number;
+  name: string;
+}
+
 interface Props {
   fieldTypes: FieldType[];
+  pages: Page[];
+  posts: Post[];
+  postTypes: PostType[];
+  categories: Category[];
 }
 
 defineProps<Props>();
@@ -28,7 +53,13 @@ defineProps<Props>();
         </p>
       </div>
 
-      <FieldGroupForm :field-types="fieldTypes" />
+      <FieldGroupForm
+        :field-types="fieldTypes"
+        :pages="pages"
+        :posts="posts"
+        :post-types="postTypes"
+        :categories="categories"
+      />
     </div>
   </CmsLayout>
 </template>

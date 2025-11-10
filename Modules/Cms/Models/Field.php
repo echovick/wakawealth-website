@@ -23,12 +23,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 final class Field extends Model
 {
-    /** @var array<string, scalar|bool|null> Default values for Eloquent attributes */
+    /** @var array<string, scalar|bool|array|null> Default values for Eloquent attributes */
     protected $attributes = [
         'required' => false,
         'order' => 0,
-        'conditional_logic' => '{}',
-        'field_config' => '{}',
     ];
 
     /**
