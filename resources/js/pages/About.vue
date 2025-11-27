@@ -6,6 +6,14 @@ import { ArrowRight, Target, Eye, Heart, Users, Award, Handshake, TrendingUp } f
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
+interface Props {
+    featuredImages?: Array<{ images: string }>;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    featuredImages: () => [],
+});
+
 defineOptions({ layout: MarketingLayout });
 
 // Smoke effect state
@@ -192,19 +200,47 @@ const services = [
                     <div class="relative" data-aos="fade-left" data-aos-delay="200">
                         <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-4">
-                                <div class="aspect-square overflow-hidden rounded-2xl bg-gradient-to-br from-gray-800 to-gray-700"></div>
-                                <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-gray-700 to-gray-800"></div>
+                                <div class="aspect-square overflow-hidden rounded-2xl bg-gradient-to-br from-gray-800 to-gray-700">
+                                    <img
+                                        v-if="featuredImages[0]?.images"
+                                        :src="featuredImages[0].images"
+                                        alt="Waka Wealth"
+                                        class="w-full h-full object-cover"
+                                    />
+                                </div>
+                                <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-gray-700 to-gray-800">
+                                    <img
+                                        v-if="featuredImages[1]?.images"
+                                        :src="featuredImages[1].images"
+                                        alt="Waka Wealth"
+                                        class="w-full h-full object-cover"
+                                    />
+                                </div>
                             </div>
                             <div class="mt-8 space-y-4">
-                                <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-gray-800 to-gray-700"></div>
-                                <div class="aspect-square overflow-hidden rounded-2xl bg-gradient-to-br from-gray-700 to-gray-800"></div>
+                                <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-gray-800 to-gray-700">
+                                    <img
+                                        v-if="featuredImages[2]?.images"
+                                        :src="featuredImages[2].images"
+                                        alt="Waka Wealth"
+                                        class="w-full h-full object-cover"
+                                    />
+                                </div>
+                                <div class="aspect-square overflow-hidden rounded-2xl bg-gradient-to-br from-gray-700 to-gray-800">
+                                    <img
+                                        v-if="featuredImages[3]?.images"
+                                        :src="featuredImages[3].images"
+                                        alt="Waka Wealth"
+                                        class="w-full h-full object-cover"
+                                    />
+                                </div>
                             </div>
                         </div>
 
                         <!-- Stats Badge -->
                         <div class="absolute -bottom-6 -left-6 rounded-2xl bg-black border border-gray-800 p-6 shadow-xl">
                             <div class="text-center">
-                                <div class="text-4xl font-bold text-[#D31C00]">500+</div>
+                                <div class="text-4xl font-bold text-[#D31C00]">100+</div>
                                 <div class="text-sm font-medium text-gray-400">
                                     Properties<br />Delivered
                                 </div>

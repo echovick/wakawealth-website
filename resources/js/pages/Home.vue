@@ -10,6 +10,7 @@ import WhyChooseUs from '@/components/marketing/WhyChooseUs.vue';
 import CustomerJourney from '@/components/marketing/CustomerJourney.vue';
 import Testimonials from '@/components/marketing/Testimonials.vue';
 import CTASection from '@/components/marketing/CTASection.vue';
+import WelcomeModal from '@/components/WelcomeModal.vue';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -138,5 +139,7 @@ const props = withDefaults(defineProps<Props>(), {
         <!-- CTA Section -->
         <CTASection />
     </div>
+
+    <WelcomeModal />
 </template>
 

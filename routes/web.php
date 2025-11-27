@@ -11,7 +11,16 @@ use Inertia\Inertia;
 Route::get('/', HomeController::class)->name('home');
 
 Route::get('/about', function () {
-    return Inertia::render('About');
+    $homePage = \Modules\Cms\Models\Page::query()
+        ->where('slug', 'home')
+        ->first();
+
+    $aboutSection = $homePage?->content['about_section'] ?? null;
+    $featuredImages = $aboutSection['featured_images'] ?? [];
+
+    return Inertia::render('About', [
+        'featuredImages' => $featuredImages,
+    ]);
 })->name('about');
 
 Route::get('/properties', PropertiesController::class)->name('properties.index');
@@ -65,6 +74,10 @@ Route::get('/blog', function () {
 Route::get('/blog/{slug}', function ($slug) {
     return Inertia::render('Blog/Details');
 })->name('blog.show');
+
+Route::get('/team', function () {
+    return Inertia::render('Team');
+})->name('team');
 
 Route::get('/contact', function () {
     return Inertia::render('Contact');

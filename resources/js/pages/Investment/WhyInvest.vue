@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import MarketingLayout from '@/layouts/MarketingLayout.vue';
+import RoiCalculatorModal from '@/components/RoiCalculatorModal.vue';
 import {
     Shield,
     TrendingUp,
@@ -20,6 +21,8 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 defineOptions({ layout: MarketingLayout });
+
+const showCalculatorModal = ref(false);
 
 // Smoke effect state
 const spotlightPosition = ref({ x: 50, y: 50 });
@@ -62,7 +65,7 @@ const whyRealEstate = [
     {
         icon: TrendingUp,
         title: 'Consistent Appreciation',
-        description: 'Real estate in prime locations consistently appreciates over time, with average annual returns of 15-25% in Abuja\'s growing market.',
+        description: 'Real estate in prime locations consistently appreciates over time, with average annual returns of 30-75% in Abuja\'s growing market.',
     },
     {
         icon: Shield,
@@ -106,7 +109,7 @@ const whyWakaWealth = [
 
 const investmentBenefits = [
     {
-        stat: '15-25%',
+        stat: '30-75%',
         label: 'Average Annual ROI',
         description: 'Properties in our locations show consistent appreciation',
     },
@@ -116,7 +119,7 @@ const investmentBenefits = [
         description: 'Every property undergoes forensic title verification',
     },
     {
-        stat: '500+',
+        stat: '100+',
         label: 'Successful Investments',
         description: 'Families building wealth through our partnership',
     },
@@ -138,7 +141,7 @@ const investmentTypes = [
             'Higher appreciation potential',
             'Ideal for long-term wealth building',
         ],
-        priceRange: '₦3M - ₦15M',
+        priceRange: '₦5M - ₦100M',
     },
     {
         type: 'Completed Homes',
@@ -150,7 +153,7 @@ const investmentTypes = [
             'No construction stress',
             'Perfect for diaspora investors',
         ],
-        priceRange: '₦25M - ₦150M',
+        priceRange: '₦150M - ₦700M',
     },
 ];
 
@@ -231,13 +234,13 @@ const testimonial = {
                     <p class="mx-auto max-w-3xl text-xl text-gray-300 mb-8">
                         Build generational wealth through tangible assets with proven appreciation and lasting security
                     </p>
-                    <Link
-                        href="/investment/calculator"
+                    <button
+                        @click="showCalculatorModal = true"
                         class="inline-flex items-center space-x-2 rounded-sm bg-[#D31C00] px-8 py-4 font-semibold text-white transition-colors hover:bg-[#B01700]"
                     >
                         <span>Calculate Your ROI</span>
                         <ArrowRight class="h-5 w-5" />
-                    </Link>
+                    </button>
                 </div>
             </div>
         </section>
@@ -512,6 +515,8 @@ const testimonial = {
             </div>
         </section>
     </div>
+
+    <RoiCalculatorModal v-model:isOpen="showCalculatorModal" />
 </template>
 
 <style scoped>

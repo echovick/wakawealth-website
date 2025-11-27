@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import WelcomeModal from '@/components/WelcomeModal.vue';
 import { dashboard, login, register } from '@/routes';
 import { Head, Link } from '@inertiajs/vue3';
 
@@ -839,4 +840,6 @@ withDefaults(
         </div>
         <div class="hidden h-14.5 lg:block"></div>
     </div>
+
+    <WelcomeModal />
 </template>

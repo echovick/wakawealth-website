@@ -2,6 +2,8 @@
 import { ref, onMounted } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import MarketingLayout from '@/layouts/MarketingLayout.vue';
+import BookConsultationModal from '@/components/BookConsultationModal.vue';
+import JoinCommunityModal from '@/components/JoinCommunityModal.vue';
 import {
     MapPin,
     Phone,
@@ -19,6 +21,9 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 defineOptions({ layout: MarketingLayout });
+
+const showConsultationModal = ref(false);
+const showCommunityModal = ref(false);
 
 // Smoke effect state
 const spotlightPosition = ref({ x: 50, y: 50 });
@@ -85,8 +90,8 @@ const contactInfo = [
     {
         icon: Phone,
         title: 'Phone Numbers',
-        details: ['+234 803 123 4567', '+234 806 789 0123'],
-        link: 'tel:+2348031234567',
+        details: ['+234 803 418 0012', '+234 911 704 2900'],
+        link: 'tel:+2348034180012',
     },
     {
         icon: Mail,
@@ -117,23 +122,33 @@ const quickActions = [
         title: 'Book Free Consultation',
         description: '30-minute one-on-one session with our investment advisors',
         cta: 'Schedule Now',
-        link: '/contact?type=consultation',
+        action: 'consultation',
     },
     {
         icon: Building2,
         title: 'Visit Our Office',
         description: 'Tour our office and view property portfolios in person',
         cta: 'Get Directions',
-        link: '#map',
+        action: 'map',
     },
     {
         icon: MessageSquare,
         title: 'Join Our Community',
         description: 'Connect with other investors and get exclusive updates',
-        cta: 'Join WhatsApp',
-        link: 'https://wa.me/2348031234567',
+        cta: 'Join Now',
+        action: 'community',
     },
 ];
+
+const handleQuickAction = (action: string) => {
+    if (action === 'consultation') {
+        showConsultationModal.value = true;
+    } else if (action === 'community') {
+        showCommunityModal.value = true;
+    } else if (action === 'map') {
+        document.getElementById('map')?.scrollIntoView({ behavior: 'smooth' });
+    }
+};
 
 const faqs = [
     {
@@ -210,11 +225,11 @@ const faqs = [
         <section class="bg-gray-900 py-12 border-b border-gray-800">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-                    <a
+                    <button
                         v-for="(action, index) in quickActions"
                         :key="index"
-                        :href="action.link"
-                        class="group rounded-2xl border border-gray-800 bg-black p-6 transition-all hover:border-[#D31C00] hover:scale-105"
+                        @click="handleQuickAction(action.action)"
+                        class="group rounded-2xl border border-gray-800 bg-black p-6 transition-all hover:border-[#D31C00] hover:scale-105 text-left cursor-pointer"
                         data-aos="fade-up"
                         :data-aos-delay="100 + (index * 100)"
                     >
@@ -233,7 +248,7 @@ const faqs = [
                                 </span>
                             </div>
                         </div>
-                    </a>
+                    </button>
                 </div>
             </div>
         </section>
@@ -550,6 +565,9 @@ const faqs = [
             </div>
         </section>
     </div>
+
+    <BookConsultationModal v-model:isOpen="showConsultationModal" />
+    <JoinCommunityModal v-model:isOpen="showCommunityModal" />
 </template>
 
 <style scoped>
