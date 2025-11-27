@@ -5,7 +5,7 @@ import { Facebook, Instagram, Twitter, Linkedin, Mail, Phone, MapPin } from 'luc
 const footerLinks = {
     company: [
         { name: 'About Us', href: '/about' },
-        { name: 'Our Team', href: '/about/our-team' },
+        { name: 'Our Team', href: '/team' },
         { name: 'Careers', href: '/about/careers' },
         { name: 'Contact', href: '/contact' },
     ],
