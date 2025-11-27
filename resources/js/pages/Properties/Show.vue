@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import MarketingLayout from '@/layouts/MarketingLayout.vue';
-import { MapPin, Home, Tag, Calendar, User, ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { MapPin, Home, Tag, Calendar, User, ChevronLeft, ChevronRight, Maximize } from 'lucide-vue-next';
 
 defineOptions({ layout: MarketingLayout });
 
@@ -22,6 +22,23 @@ interface Author {
     name: string;
 }
 
+interface PropertyVariation {
+    id: number;
+    name: string;
+    size: string | null;
+    property_type: string | null;
+    bedrooms: number | null;
+    description: string | null;
+    price: number;
+    payment_plan: {
+        initial_deposit_percentage?: number;
+        duration_months?: number;
+        description?: string;
+    } | null;
+    order: number;
+    is_featured: boolean;
+}
+
 interface Property {
     id: number;
     title: string;
@@ -33,10 +50,13 @@ interface Property {
     post_type: PostType;
     categories: Category[];
     user: Author;
+    variations: PropertyVariation[];
 }
 
 interface Props {
     property: Property;
+    startingPrice: number;
+    hasVariations: boolean;
 }
 
 const props = defineProps<Props>();
@@ -74,8 +94,20 @@ const gallery = computed(() => {
     ];
 });
 
+const selectedVariationIndex = ref(0);
+
+const selectedVariation = computed(() => {
+    if (props.hasVariations && props.property.variations.length > 0) {
+        return props.property.variations[selectedVariationIndex.value];
+    }
+    return null;
+});
+
 const price = computed(() => {
-    return props.property.content?.price || 45000000;
+    if (props.hasVariations && selectedVariation.value) {
+        return selectedVariation.value.price;
+    }
+    return props.property.content?.price || props.startingPrice || 45000000;
 });
 
 const propertyOverview = computed(() => {
@@ -207,8 +239,11 @@ const selectImage = (index: number) => {
                     </h1>
 
                     <div class="mb-4">
+                        <div v-if="hasVariations" class="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-400">
+                            Starting From
+                        </div>
                         <div class="text-3xl font-bold text-[#D31C00]">
-                            {{ formatPrice(price) }}
+                            {{ formatPrice(hasVariations ? startingPrice : price) }}
                         </div>
                     </div>
 
@@ -303,6 +338,103 @@ const selectImage = (index: number) => {
                                     <p class="mb-4">
                                         Whether you're looking for your dream home or a lucrative investment, this property offers the perfect blend of quality construction, premium amenities, and future appreciation potential.
                                     </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Property Variations (if available) -->
+                        <div v-if="hasVariations && property.variations.length > 0" class="rounded-2xl border border-gray-800 bg-gray-900 p-8">
+                            <h2 class="mb-6 text-2xl font-bold text-white">Available Plans & Pricing</h2>
+
+                            <!-- Variations Tabs -->
+                            <div class="mb-6 flex flex-wrap gap-2">
+                                <button
+                                    v-for="(variation, index) in property.variations"
+                                    :key="variation.id"
+                                    @click="selectedVariationIndex = index"
+                                    :class="[
+                                        'px-6 py-3 rounded-lg font-semibold transition-all',
+                                        selectedVariationIndex === index
+                                            ? 'bg-[#D31C00] text-white shadow-lg'
+                                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                                    ]"
+                                >
+                                    <div class="text-left">
+                                        <div class="text-sm font-bold">{{ variation.size || variation.name }}</div>
+                                        <div class="text-xs opacity-80">{{ formatPrice(variation.price) }}</div>
+                                    </div>
+                                </button>
+                            </div>
+
+                            <!-- Selected Variation Details -->
+                            <div v-if="selectedVariation" class="space-y-6">
+                                <!-- Variation Header -->
+                                <div class="rounded-lg border border-gray-700 bg-black p-6">
+                                    <div class="mb-4 flex flex-wrap items-start justify-between gap-4">
+                                        <div>
+                                            <h3 class="text-2xl font-bold text-white mb-2">
+                                                {{ selectedVariation.name }}
+                                            </h3>
+                                            <div class="flex flex-wrap items-center gap-4 text-sm text-gray-400">
+                                                <span v-if="selectedVariation.size" class="inline-flex items-center gap-1">
+                                                    <Maximize class="h-4 w-4" />
+                                                    {{ selectedVariation.size }}
+                                                </span>
+                                                <span v-if="selectedVariation.property_type">
+                                                    {{ selectedVariation.property_type }}
+                                                </span>
+                                                <span v-if="selectedVariation.bedrooms" class="inline-flex items-center gap-1">
+                                                    <Home class="h-4 w-4" />
+                                                    {{ selectedVariation.bedrooms }} Bedrooms
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-1">
+                                                Price
+                                            </div>
+                                            <div class="text-3xl font-bold text-[#D31C00]">
+                                                {{ formatPrice(selectedVariation.price) }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Variation Description -->
+                                    <div v-if="selectedVariation.description" class="text-gray-300 leading-relaxed">
+                                        {{ selectedVariation.description }}
+                                    </div>
+                                </div>
+
+                                <!-- Payment Plan -->
+                                <div v-if="selectedVariation.payment_plan" class="rounded-lg border border-gray-700 bg-black p-6">
+                                    <h4 class="text-lg font-bold text-white mb-4">Payment Plan</h4>
+                                    <div class="space-y-3 text-gray-300">
+                                        <div v-if="selectedVariation.payment_plan.initial_deposit_percentage" class="flex items-center justify-between">
+                                            <span>Initial Deposit ({{ selectedVariation.payment_plan.initial_deposit_percentage }}%)</span>
+                                            <span class="font-semibold text-white">
+                                                {{ formatPrice(selectedVariation.price * selectedVariation.payment_plan.initial_deposit_percentage / 100) }}
+                                            </span>
+                                        </div>
+                                        <div v-if="selectedVariation.payment_plan.duration_months" class="flex items-center justify-between">
+                                            <span>Balance spread over {{ selectedVariation.payment_plan.duration_months }} months</span>
+                                            <span class="font-semibold text-white">
+                                                {{ formatPrice((selectedVariation.price * (100 - (selectedVariation.payment_plan.initial_deposit_percentage || 0)) / 100) / selectedVariation.payment_plan.duration_months) }}/month
+                                            </span>
+                                        </div>
+                                        <div v-if="selectedVariation.payment_plan.description" class="pt-3 border-t border-gray-700 text-sm text-gray-400">
+                                            {{ selectedVariation.payment_plan.description }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CTA Button -->
+                                <div class="flex gap-4">
+                                    <Link
+                                        href="/contact"
+                                        class="flex-1 rounded-sm bg-[#D31C00] px-6 py-4 text-center font-semibold text-white transition-colors hover:bg-[#B01700]"
+                                    >
+                                        Inquire About This Plan
+                                    </Link>
                                 </div>
                             </div>
                         </div>

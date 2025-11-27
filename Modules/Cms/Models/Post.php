@@ -2,10 +2,12 @@
 
 namespace Modules\Cms\Models;
 
+use App\Models\PropertyVariation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -59,5 +61,10 @@ final class Post extends Model
         return $this->belongsToMany(Category::class, 'post_type_categories')
             ->withPivot('post_type_id')
             ->withTimestamps();
+    }
+
+    public function variations(): HasMany
+    {
+        return $this->hasMany(PropertyVariation::class)->orderBy('order');
     }
 }

@@ -14,11 +14,25 @@ final class PropertyController
     {
         $property = Post::query()
             ->where('slug', $slug)
-            ->with(['postType:id,title', 'categories:id,name,slug', 'user:id,name'])
+            ->with([
+                'postType:id,title',
+                'categories:id,name,slug',
+                'user:id,name',
+                'variations' => function ($query) {
+                    $query->orderBy('order')->orderBy('price');
+                }
+            ])
             ->firstOrFail();
+
+        // Calculate starting from price
+        $startingPrice = $property->variations->isNotEmpty()
+            ? $property->variations->min('price')
+            : ($property->content['price'] ?? 0);
 
         return Inertia::render('Properties/Show', [
             'property' => $property,
+            'startingPrice' => $startingPrice,
+            'hasVariations' => $property->variations->isNotEmpty(),
         ]);
     }
 }
